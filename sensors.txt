@@ -1,0 +1,98 @@
+{
+    "S1": {
+        "ID": 1,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 1
+    },
+    "S2": {
+        "ID": 2,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S3": {
+        "ID": 3,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S4": {
+        "ID": 4,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S5": {
+        "ID": 5,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S6": {
+        "ID": 6,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S7": {
+        "ID": 7,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S8": {
+        "ID": 8,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S9": {
+        "ID": 9,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S10": {
+        "ID": 10,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S11": {
+        "ID": 11,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S12": {
+        "ID": 12,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S13": {
+        "ID": 13,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S14": {
+        "ID": 14,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S15": {
+        "ID": 15,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    },
+    "S16": {
+        "ID": 16,
+        "Zone": 0,
+        "Status": 0,
+        "Install": 0
+    }
+}
