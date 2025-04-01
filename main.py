@@ -1,4 +1,7 @@
 import tkinter as tk
+from code_lists import *
+from sensors_list import *
+from admin_mode import *
 
 #Parameters --------------------------------------------------------------------------------------
 # Crear la interfaz principal
@@ -27,6 +30,11 @@ USER_MODE_MENU      = 2
 MODO_0_MENU         = 3
 MODO_1_MENU         = 4
 MODO_DESARMADO_MENU = 5
+MODO_AHORRO         = 6
+
+#ERROR_CODES
+ERROR_MODE = -1
+EXIT_MODE  =  0
 
 #Utils ---------------------------------------------------------------------------------------------
 
@@ -53,6 +61,9 @@ def hide_main_menu():
     for label in additional_text_labels:
         label.grid_remove()
 
+#MAIN APP
+#USR INTERACTS WITH SSH
+
 def on_button_click(value):
     global current_State, sequence
 
@@ -66,11 +77,47 @@ def on_button_click(value):
         sequence.clear()  # Limpiar la secuencia
 
     elif value == "Enter":
-        if sequence == ["1"]:
+        if (current_State == START_MENU and sequence == ["1"]):
             current_State = MAIN_MENU  # Cambiar al menú principal
             update_label()  # Actualizar el label
+        elif (current_State == START_MENU):
+            update_label()  # Actualizar el label
+        elif current_State == MODO_0_MENU:
+            1
+        elif current_State == MODO_1_MENU:
+            1
+        elif current_State == MODO_DESARMADO_MENU:
+            1
+        elif current_State == USER_MODE_MENU:
+            current_command = get_string(sequence)
+            status = admin_mode(current_command)
+            if (status == ERROR_MODE or status == EXIT_MODE):
+                current_State = START_MENU  # Volver al estado inicial
+                update_label()  # Actualizar el label
+        elif current_State == MODO_AHORRO:
+            1
         else:
-            current_State = START_MENU  # Volver al estado inicial
+            if (sequence[0]=='#' and sequence[-1]=='*'):
+                current_Code = get_code(sequence)
+                if (current_Code == Codes_list["Code_Modo_0"]):
+                    current_State = MODO_0_MENU
+
+                elif (current_Code == Codes_list["Code_Modo_1"]):
+                    current_State = MODO_1_MENU
+
+                elif (current_Code == Codes_list["Code_Desarmado"]):
+                    current_State = MODO_DESARMADO_MENU
+
+                elif (current_Code == Codes_list["Code_Admin"]):
+                    current_State = USER_MODE_MENU
+
+                elif (current_Code == Codes_list["Code_Ahorro"]):
+                    current_State = MODO_AHORRO
+
+                else:
+                    print("Invalid command. Returning to START MENU")
+                    current_State = START_MENU  # Volver al estado inicial
+
             update_label()  # Actualizar el label
         entry_ID.delete(0, tk.END)
         sequence.clear()  # Limpiar la secuencia

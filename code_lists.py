@@ -1,11 +1,11 @@
 import json
 
 Codes_list = {
-    "Code_Modo_0"   : "12345678",
-    "Code_Modo_1"   : "23456781",
-    "Code_Desarmado": "34567812",
-    "Code_Admin"    : "45678123",
-    "Code_Ahorro"   : "56781234"
+    "Code_Modo_0"   : "123456",
+    "Code_Modo_1"   : "234567",
+    "Code_Desarmado": "345678",
+    "Code_Admin"    : "456781",
+    "Code_Ahorro"   : "567812"
 }
 
 def actualizar_Code(code_name, value):
@@ -29,5 +29,19 @@ def read_Codes_list():
         Codes_list = json.load(file)
     print("Lista de codigos actualizada:", Codes_list)
 
-save_Codes_list()
-read_Codes_list()
+def get_code(seq):
+    code = ''
+    for i in seq[1:-1]:
+        code += i
+    return code
+
+def get_string(seq):
+    code = ''
+    for i in seq:
+        code += i
+    return code
+
+#TESTS
+#print(Codes_list["Code_Admin"])
+#save_Codes_list()
+#read_Codes_list()
