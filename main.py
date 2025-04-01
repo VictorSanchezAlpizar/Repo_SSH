@@ -139,11 +139,14 @@ additional_text_labels = [
     tk.Label(root, text="3. Cerrar sesión", font=("Arial", 12))
 ]
 
+row_custom = 1
+
 # Colocar las líneas de texto adicionales en la interfaz (inicialmente ocultas)
 for i, label in enumerate(additional_text_labels):
-    label.grid(row=row_custom+3+i, column=0, columnspan=4, sticky="w")
+    label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
     label.grid_remove()  # Ocultar inicialmente
 
+row_custom+=len(additional_text_labels)
 
 label_bateria = tk.Label(root, text="Batería", bg="white", width=10, height=2)
 label_bateria.grid(row=row_custom+1, column=0, columnspan=1)
@@ -159,6 +162,3 @@ tk.Label(root, text="SSH-101", font=('Arial', 14)).grid(row=row_custom+2, column
 tk.Button(root, text="Abrir Interfaz Sim", command=open_secondary_interface).grid(row=row_custom+4, column=0, columnspan=4)
 
 root.mainloop()
-
-
-if ()

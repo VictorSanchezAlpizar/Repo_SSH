@@ -47,6 +47,7 @@ def save_sensors_list():
     print("Lista de sensores almacenada en memoria")
 
 def read_sensors_list():
+    global Sensors_list
     with open("sensors.txt", "r") as file:
         Sensors_list = json.load(file)
     print("Lista de sensores actualizada:", Sensors_list)
