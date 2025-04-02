@@ -2,12 +2,14 @@ import tkinter as tk
 from code_lists import *
 from sensors_list import *
 from admin_mode import *
-from utils import *
+from utils import * # type: ignore
+from sim_sensors import SimSensors
 
 #Parameters --------------------------------------------------------------------------------------
 # Crear la interfaz principal
 root = tk.Tk()
 root.title("Interfaz Principal")
+sim_sensors = SimSensors(root)
 
 # Crear y colocar los botones en la interfaz principal
 buttons = [
@@ -165,6 +167,8 @@ def on_button_click(value):
                 if (current_Code == Codes_list["Code_Modo_0"]):
                     current_State = MODO_0_MENU
                     menu_label = "ARMADO. MODO 0"
+                    update_label()
+                    print("[INFO] Estado MODO_0")
 
                 elif (current_Code == Codes_list["Code_Modo_1"]):
                     current_State = MODO_1_MENU
@@ -206,6 +210,8 @@ def turn_on_main_button(value):
     if value == "Sim Bomberos PASS":
         # Cambiar el estado del botón en la interfaz principal
         label_alerta.config(bg="white", text="Alerta")
+    if value == "Sim Sensor falla":
+        sim_sensors.open_sim_sensor_falla()  # Usamos la clase
 
 def open_secondary_interface():
     secondary_window = tk.Toplevel(root)
