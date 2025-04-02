@@ -2,6 +2,7 @@ import tkinter as tk
 from code_lists import *
 from sensors_list import *
 from admin_mode import *
+from utils import *
 
 #Parameters --------------------------------------------------------------------------------------
 # Crear la interfaz principal
@@ -21,7 +22,15 @@ col_custom    = 0
 current_State = 0
 
 sequence = []
-additional_text_labels = []
+
+main_menu_labels = []
+admin_menu_labels = []
+
+menu_to_be_displayed = tk.StringVar(value="MODE INIT")
+menu_label = "DESARMADO"
+
+usr_to_be_displayed = tk.StringVar(value="USR NS")
+active_user = "0"
 
 #States
 START_MENU          = 0
@@ -35,11 +44,17 @@ MODO_AHORRO         = 6
 #ERROR_CODES
 ERROR_MODE = -1
 EXIT_MODE  =  0
+EXIT_USR   =  3
 
 #Utils ---------------------------------------------------------------------------------------------
 
 def update_label():
+    global active_user, menu_label, menu_to_be_displayed, usr_to_be_displayed
     """Actualiza el label_ID según el estado actual."""
+
+    menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
+    usr_to_be_displayed.set(f"Usuario: {active_user}")
+
     if current_State == START_MENU:
         label_ID.config(text="User ID: ")
         hide_all()
@@ -47,25 +62,42 @@ def update_label():
         label_ID.config(text="Opciones: ")
         hide_all()
         show_main_menu()
+    elif current_State == USER_MODE_MENU:
+        label_ID.config(text="Opciones: ")
+        hide_all()
+        show_admin_menu()
 
 def hide_all():
     hide_main_menu()
+    hide_admin_menu()
 
 def show_main_menu():
     """Muestra las líneas de texto adicionales en la pantalla principal."""
-    for label in additional_text_labels:
+    for label in main_menu_labels:
+        label.grid()
+
+def show_admin_menu():
+    """Muestra Menu modo Admin."""
+    for label in admin_menu_labels:
         label.grid()
 
 def hide_main_menu():
     """Oculta las líneas de texto adicionales en la pantalla principal."""
-    for label in additional_text_labels:
+    for label in main_menu_labels:
         label.grid_remove()
 
+def hide_admin_menu():
+    """Oculta las líneas de texto adicionales en la pantalla principal."""
+    for label in admin_menu_labels:
+        label.grid_remove()
+
+#-----------------------------------------------------------------------------------------
 #MAIN APP
 #USR INTERACTS WITH SSH
+#-----------------------------------------------------------------------------------------
 
 def on_button_click(value):
-    global current_State, sequence
+    global current_State, sequence, start_menu_label, active_user
 
     if value == "Pánico" or value == "Bomberos":
         # Cambiar el color del indicador L1 a verde cuando se presiona "Batería"
@@ -77,46 +109,73 @@ def on_button_click(value):
         sequence.clear()  # Limpiar la secuencia
 
     elif value == "Enter":
-        if (current_State == START_MENU and sequence == ["1"]):
-            current_State = MAIN_MENU  # Cambiar al menú principal
+        if (current_State == START_MENU and (sequence[0] != "#" and sequence[0] != "*")):
+            current_State = MAIN_MENU  # Cambiar al menú principal       
+            active_user = get_string(sequence)
+            menu_label = "USER MENU"
             update_label()  # Actualizar el label
+        
+        elif (current_State == MAIN_MENU and get_string(sequence) == str(EXIT_USR)):
+            current_State = START_MENU  # Cambiar al menú start
+            menu_label = "START MENU"
+            update_label()  # Actualizar el label
+
         elif (current_State == START_MENU):
+            menu_label = "START MENU"
             update_label()  # Actualizar el label
+
         elif current_State == MODO_0_MENU:
-            1
+            menu_label = "ARMADO. MODO 0"
+            update_label()  # Actualizar el label
+
         elif current_State == MODO_1_MENU:
-            1
+            menu_label = "ARMADO. MODO 1"
+            update_label()  # Actualizar el label
+
         elif current_State == MODO_DESARMADO_MENU:
-            1
+            menu_label = "DESARMADO"
+            update_label()  # Actualizar el label
+
         elif current_State == USER_MODE_MENU:
             current_command = get_string(sequence)
             status = admin_mode(current_command)
             if (status == ERROR_MODE or status == EXIT_MODE):
                 current_State = START_MENU  # Volver al estado inicial
                 update_label()  # Actualizar el label
+            menu_label = "MODO ADMIN"
+            update_label()  # Actualizar el label
+
         elif current_State == MODO_AHORRO:
-            1
+            menu_label = "ARMADO. MODO AHORRO"
+            update_label()  # Actualizar el label
+
         else:
             if (sequence[0]=='#' and sequence[-1]=='*'):
                 current_Code = get_code(sequence)
                 if (current_Code == Codes_list["Code_Modo_0"]):
                     current_State = MODO_0_MENU
+                    menu_label = "ARMADO. MODO 0"
 
                 elif (current_Code == Codes_list["Code_Modo_1"]):
                     current_State = MODO_1_MENU
+                    menu_label = "ARMADO. MODO 1"
 
                 elif (current_Code == Codes_list["Code_Desarmado"]):
                     current_State = MODO_DESARMADO_MENU
+                    menu_label = "DESARMADO"
 
                 elif (current_Code == Codes_list["Code_Admin"]):
                     current_State = USER_MODE_MENU
+                    menu_label = "MODO ADMIN"
 
                 elif (current_Code == Codes_list["Code_Ahorro"]):
                     current_State = MODO_AHORRO
+                    menu_label = "ARMADO. MODO AHORRO"
 
                 else:
                     print("Invalid command. Returning to START MENU")
                     current_State = START_MENU  # Volver al estado inicial
+                    menu_label = "START MENU"
 
             update_label()  # Actualizar el label
         entry_ID.delete(0, tk.END)
@@ -126,8 +185,6 @@ def on_button_click(value):
         # Añadir el valor del botón al cuadro de texto
         entry_ID.insert(tk.END, value)
         sequence.append(value)  # Añadir el valor a la secuencia
-
-    print(f"Button {value} clicked")
 
 def turn_on_main_button(value):
     if value == "Sim falla electrica ON":
@@ -151,8 +208,11 @@ def open_secondary_interface():
     tk.Button(secondary_window, text="Sim falla electrica OFF", command=lambda b="Sim falla electrica OFF": turn_on_main_button(b)).pack(pady=10)
     tk.Button(secondary_window, text="Sim Sensor falla", command=lambda b="Sim Sensor falla": turn_on_main_button(b)).pack(pady=15)
     tk.Button(secondary_window, text="Sim Bomberos PASS", command=lambda b="Sim Bomberos PASS": turn_on_main_button(b)).pack(pady=20)
-    
-#Main interface ---------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------------------------------   
+# Main interface
+# MENUS Setup
+#------------------------------------------------------------------------------------------------------
 
 label_ID = tk.Label(text="User ID: ", font=("Arial", 14))
 label_ID.grid(column=0, row=0)
@@ -180,20 +240,34 @@ for button in buttons:
         row_custom += 1
 
 # Crear las líneas de texto adicionales (inicialmente ocultas)
-additional_text_labels = [
-    tk.Label(root, text="1. Ver perfil", font=("Arial", 12)),
-    tk.Label(root, text="2. Cambiar contraseña", font=("Arial", 12)),
-    tk.Label(root, text="3. Cerrar sesión", font=("Arial", 12))
+main_menu_labels = [
+    tk.Label(root, textvariable=usr_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, text="3. Cerrar sesión", font=("Arial", 10))
 ]
 
-row_custom = 1
+admin_menu_labels = [
+    tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, text="1. Registro de Usuarios", font=("Arial", 10)),
+    tk.Label(root, text="2. Registro de Sensores", font=("Arial", 10)),
+    tk.Label(root, text="3. Modificar Sensor", font=("Arial", 10)),
+    tk.Label(root, text="4. Registro Num. Telefonico", font=("Arial", 10)),
+    tk.Label(root, text="5. Salir Modo Admin", font=("Arial", 10))
+]
+
 
 # Colocar las líneas de texto adicionales en la interfaz (inicialmente ocultas)
-for i, label in enumerate(additional_text_labels):
+row_custom = 1
+for i, label in enumerate(main_menu_labels):
     label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
     label.grid_remove()  # Ocultar inicialmente
 
-row_custom+=len(additional_text_labels)
+row_custom = 1
+for i, label in enumerate(admin_menu_labels):
+    label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
+    label.grid_remove()  # Ocultar inicialmente
+
+row_custom+=len(admin_menu_labels)
 
 label_bateria = tk.Label(root, text="Batería", bg="white", width=10, height=2)
 label_bateria.grid(row=row_custom+1, column=0, columnspan=1)
