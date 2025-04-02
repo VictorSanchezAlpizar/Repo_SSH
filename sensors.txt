@@ -2,20 +2,20 @@
     "S1": {
         "ID": 1,
         "Zone": 0,
-        "Status": 0,
+        "Status": 1,
         "Install": 1
     },
     "S2": {
         "ID": 2,
         "Zone": 0,
         "Status": 0,
-        "Install": 0
+        "Install": 1
     },
     "S3": {
         "ID": 3,
-        "Zone": 0,
+        "Zone": 1,
         "Status": 0,
-        "Install": 0
+        "Install": 1
     },
     "S4": {
         "ID": 4,

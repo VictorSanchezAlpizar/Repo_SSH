@@ -4,12 +4,22 @@ from sensors_list import *
 from admin_mode import *
 from utils import * # type: ignore
 from sim_sensors import SimSensors
+from modo_0_monitor import Modo0Monitor
+from modo_1_monitor import Modo1Monitor
 
 #Parameters --------------------------------------------------------------------------------------
 # Crear la interfaz principal
 root = tk.Tk()
 root.title("Interfaz Principal")
 sim_sensors = SimSensors(root)
+
+# MODO 0
+def handle_sensor_alert(triggered_sensors):
+    print(f"¡ALERTA! Sensores activados: {', '.join(triggered_sensors)}")
+    label_alerta.config(bg="red", text=f"Alerta: {triggered_sensors[0]}")
+
+modo0_monitor = Modo0Monitor(root, handle_sensor_alert)
+modo1_monitor = Modo1Monitor(root, handle_sensor_alert)
 
 # Crear y colocar los botones en la interfaz principal
 buttons = [
@@ -68,6 +78,21 @@ def update_label():
         label_ID.config(text="Opciones: ")
         hide_all()
         show_admin_menu()
+    elif current_State == MODO_0_MENU:
+        menu_label = "ARMADO. MODO 0"
+        label_ID.config(text="Opciones: ")
+        hide_all()
+        show_main_menu()
+    elif current_State == MODO_1_MENU:
+        menu_label = "ARMADO. MODO 1"
+        label_ID.config(text="Opciones: ")
+        hide_all()
+        show_main_menu()
+    elif current_State == MODO_DESARMADO_MENU:
+        menu_label = "DESARMADO"
+        label_ID.config(text="Opciones: ")
+        hide_all()
+        show_main_menu()
 
 def hide_all():
     hide_main_menu()
@@ -122,22 +147,6 @@ def on_button_click(value):
             menu_label = "START MENU"
             update_label()  # Actualizar el label
 
-        elif (current_State == START_MENU):
-            menu_label = "START MENU"
-            update_label()  # Actualizar el label
-
-        elif current_State == MODO_0_MENU:
-            menu_label = "ARMADO. MODO 0"
-            update_label()  # Actualizar el label
-
-        elif current_State == MODO_1_MENU:
-            menu_label = "ARMADO. MODO 1"
-            update_label()  # Actualizar el label
-
-        elif current_State == MODO_DESARMADO_MENU:
-            menu_label = "DESARMADO"
-            update_label()  # Actualizar el label
-
         elif current_State == USER_MODE_MENU:
             menu_label = "MODO ADMIN"
             current_command = get_string(sequence)
@@ -157,26 +166,26 @@ def on_button_click(value):
                 current_State = START_MENU  # Volver al estado inicial
                 update_label()  # Actualizar el label
 
-        elif current_State == MODO_AHORRO:
-            menu_label = "ARMADO. MODO AHORRO"
-            update_label()  # Actualizar el label
-
         else:
             if (sequence[0]=='#' and sequence[-1]=='*'):
                 current_Code = get_code(sequence)
                 if (current_Code == Codes_list["Code_Modo_0"]):
                     current_State = MODO_0_MENU
-                    menu_label = "ARMADO. MODO 0"
                     update_label()
-                    print("[INFO] Estado MODO_0")
-
+                    modo0_monitor.start_monitoring()
+                    
                 elif (current_Code == Codes_list["Code_Modo_1"]):
                     current_State = MODO_1_MENU
-                    menu_label = "ARMADO. MODO 1"
+                    update_label()
+                    modo1_monitor.start_monitoring()
 
                 elif (current_Code == Codes_list["Code_Desarmado"]):
                     current_State = MODO_DESARMADO_MENU
-                    menu_label = "DESARMADO"
+                    update_label()
+                    modo0_monitor.stop_monitoring()  # Detener monitoreo
+                    modo1_monitor.stop_monitoring()
+                    print("[INFO] Estado DESARMADO")
+                    label_alerta.config(bg="white", text="Alerta") 
 
                 elif (current_Code == Codes_list["Code_Admin"]):
                     current_State = USER_MODE_MENU

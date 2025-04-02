@@ -13,9 +13,9 @@ INSTALL = 1
 NOT_INSTALL = 0
 
 Sensors_list = {
-    "S1": {"ID": 1, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
-    "S2": {"ID": 2, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
-    "S3": {"ID": 3, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S1": {"ID": 1, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
+    "S2": {"ID": 2, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
+    "S3": {"ID": 3, "Zone": 1, "Status": INACTIVE, "Install": INSTALL},
     "S4": {"ID": 4, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
     "S5": {"ID": 5, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
     "S6": {"ID": 6, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
