@@ -59,6 +59,7 @@ print(f'Sensor ID: {Sensors_list["S1"]["ID"]}')
 print(f'Sensor Install Status: {Sensors_list["S1"]["Install"]}')
 
 x = actualizar_sensor("S1", "Install", INSTALL)
+
 print(f'Sensor ID: {Sensors_list["S1"]["ID"]}')
 print(f'Sensor Install Status: {Sensors_list["S1"]["Install"]}')
 print(f'Was config valid: {x}')

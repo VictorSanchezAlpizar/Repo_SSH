@@ -33,13 +33,13 @@ usr_to_be_displayed = tk.StringVar(value="USR NS")
 active_user = "0"
 
 #States
-START_MENU          = 0
-MAIN_MENU           = 1
-USER_MODE_MENU      = 2
-MODO_0_MENU         = 3
-MODO_1_MENU         = 4
-MODO_DESARMADO_MENU = 5
-MODO_AHORRO         = 6
+START_MENU              = 0
+MAIN_MENU               = 1
+USER_MODE_MENU          = 2
+MODO_0_MENU             = 3
+MODO_1_MENU             = 4
+MODO_DESARMADO_MENU     = 5
+MODO_AHORRO             = 6
 
 #ERROR_CODES
 ERROR_MODE = -1
@@ -137,13 +137,23 @@ def on_button_click(value):
             update_label()  # Actualizar el label
 
         elif current_State == USER_MODE_MENU:
+            menu_label = "MODO ADMIN"
             current_command = get_string(sequence)
-            status = admin_mode(current_command)
-            if (status == ERROR_MODE or status == EXIT_MODE):
+            status = admin_mode_sm(current_command)
+
+            if (status == REG_USR):
+                label_ID.config(text="Nuevo USR: ")
+            elif (status == REG_SNR):
+                label_ID.config(text="Nuevo SNR: ")
+            elif (status == MOD_SNR):
+                label_ID.config(text="Modificar SNR: ")
+            elif (status == REG_TEL):
+                label_ID.config(text="Nuevo TEL: ")
+
+            if (status == ERROR_MODE or status == EXIT_USR):
+                menu_label = "START MENU"
                 current_State = START_MENU  # Volver al estado inicial
                 update_label()  # Actualizar el label
-            menu_label = "MODO ADMIN"
-            update_label()  # Actualizar el label
 
         elif current_State == MODO_AHORRO:
             menu_label = "ARMADO. MODO AHORRO"
