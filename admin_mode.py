@@ -11,7 +11,7 @@ def admin_mode(cmd):
         1
     elif (cmd == REG_SNR):
         2
-    elif (cmd == MOD_SNR)
+    elif (cmd == MOD_SNR):
         3
     elif (cmd == REG_TEL):
         4
