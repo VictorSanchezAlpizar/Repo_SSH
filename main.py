@@ -170,14 +170,33 @@ def on_button_click(value):
             if (sequence[0]=='#' and sequence[-1]=='*'):
                 current_Code = get_code(sequence)
                 if (current_Code == Codes_list["Code_Modo_0"]):
-                    current_State = MODO_0_MENU
-                    update_label()
-                    modo0_monitor.start_monitoring()
+                    # Chequeo inicial solo para Modo 0
+                    sensores_activos = modo0_monitor._check_activated_sensors()  # Usamos tu método existente
+            
+                    if sensores_activos:
+                        print(f"[MODO 0] ¡No se puede armar! Sensores activos: {sensores_activos}")
+                        label_alerta.config(bg="yellow", text= f"{sensores_activos[0]} Activo")
+                        current_State = MODO_DESARMADO_MENU  # Volvemos a desarmado
+                    else:
+                        current_State = MODO_0_MENU
+                        label_alerta.config(bg="white", text="Alerta") 
+                        modo0_monitor.start_monitoring()
+                    
+                    update_label()  # Actualizamos la interfaz una sola vez
                     
                 elif (current_Code == Codes_list["Code_Modo_1"]):
-                    current_State = MODO_1_MENU
-                    update_label()
-                    modo1_monitor.start_monitoring()
+                    sensores_activos = modo1_monitor._check_activated_sensors()  # Usamos tu método existente
+            
+                    if sensores_activos:
+                        print(f"[MODO 1] ¡No se puede armar! Sensores activos: {sensores_activos}")
+                        label_alerta.config(bg="yellow", text= f"{sensores_activos[0]} Activo")
+                        current_State = MODO_DESARMADO_MENU  # Volvemos a desarmado
+                    else:
+                        current_State = MODO_0_MENU
+                        label_alerta.config(bg="white", text="Alerta") 
+                        modo0_monitor.start_monitoring()
+                    
+                    update_label()  # Actualizamos la interfaz una sola vez
 
                 elif (current_Code == Codes_list["Code_Desarmado"]):
                     current_State = MODO_DESARMADO_MENU

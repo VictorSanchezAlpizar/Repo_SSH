@@ -2,13 +2,13 @@
     "S1": {
         "ID": 1,
         "Zone": 0,
-        "Status": 1,
+        "Status": 0,
         "Install": 1
     },
     "S2": {
         "ID": 2,
         "Zone": 0,
-        "Status": 0,
+        "Status": 1,
         "Install": 1
     },
     "S3": {
@@ -25,9 +25,9 @@
     },
     "S5": {
         "ID": 5,
-        "Zone": 0,
-        "Status": 0,
-        "Install": 0
+        "Zone": 1,
+        "Status": 1,
+        "Install": 1
     },
     "S6": {
         "ID": 6,
