@@ -9,7 +9,8 @@ ACTIVE = 1
 INACTIVE = 0
 
 #Install Estatus
-INSTALL = 1
+OFF_MODE    = 2
+INSTALL     = 1
 NOT_INSTALL = 0
 
 Sensors_list = {
