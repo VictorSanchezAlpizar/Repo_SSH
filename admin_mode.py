@@ -82,6 +82,7 @@ def admin_mode_sm(cmd):
         status = ERR
     return status
 
+# IMPLEMENTS: SW-ID-XX
 def actualizar_User(code_name, value):
     valid_config = False
     if code_name in Codes_list:
