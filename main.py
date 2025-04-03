@@ -167,6 +167,7 @@ def on_button_click(value):
                 if (is_match == True):
                     active_user = tmp_usr
                     current_Usr_State = USR_PROGRESS
+                    is_match = False
                     update_label()  # Actualizar el label
 
                 else:
@@ -199,14 +200,50 @@ def on_button_click(value):
             current_command = get_string(sequence)
             status = admin_mode_sm(current_command)
 
+            #---------------------------------------
+            #MAIN ADMIN
+            #---------------------------------------
+
+            if (status == IDLE):
+                label_ID.config(text="Opciones: ")
+            
+            #---------------------------------------
+            #REGISTER / MODIFY USER
+            #---------------------------------------
+
             if (status == REG_USR):
                 label_ID.config(text="Nuevo USR: ")
+            elif (status == REG_USR_2):
+                label_ID.config(text="Nueva PWD: ")
+            
+            #---------------------------------------
+            #REGISTER SENSOR
+            #---------------------------------------
+
             elif (status == REG_SNR):
-                label_ID.config(text="Nuevo SNR: ")
+                label_ID.config(text="Nuevo SNR (1-16): ")
+            elif (status == REG_SNR_2):
+                label_ID.config(text="Zona (0-1): ")
+
+            #---------------------------------------
+            #MODIFY SENSOR
+            #---------------------------------------
+
             elif (status == MOD_SNR):
-                label_ID.config(text="Modificar SNR: ")
+                label_ID.config(text="Modificar SNR (1-16): ")
+            elif (status == MOD_SNR_2):
+                label_ID.config(text="Zona (0-1,2:N_INST): ")
+
+            #---------------------------------------
+            #MODIFY TEL
+            #---------------------------------------
+
             elif (status == REG_TEL):
                 label_ID.config(text="Nuevo TEL: ")
+
+            #---------------------------------------
+            #ERROR IN PROGRESS
+            #---------------------------------------
 
             if (status == ERROR_MODE or status == EXIT_USR):
                 menu_label = "START MENU"
@@ -265,7 +302,9 @@ def on_button_click(value):
                 else:
                     print("Invalid command. Returning to START MENU")
                     current_State = START_MENU  # Volver al estado inicial
+                    current_Usr_State == USR_INACTIVE
                     menu_label = "START MENU"
+                    update_label()
 
             update_label()  # Actualizar el label
         entry_ID.delete(0, tk.END)
