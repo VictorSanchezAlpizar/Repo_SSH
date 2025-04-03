@@ -17,9 +17,11 @@ buttons = [
     '*', '0', '#', 'Bomberos'
 ]
 
-row_custom    = 0
-col_custom    = 0
-current_State = 0
+row_custom        = 0
+col_custom        = 0
+current_State     = 0
+current_Usr_State = 0
+usr_ID            = "NA"
 
 sequence = []
 
@@ -41,6 +43,10 @@ MODO_1_MENU             = 4
 MODO_DESARMADO_MENU     = 5
 MODO_AHORRO             = 6
 
+USR_INACTIVE = 0
+USR_PROGRESS = 1
+USR_ACTIVE   = 2
+
 #ERROR_CODES
 ERROR_MODE = -1
 EXIT_MODE  =  0
@@ -49,23 +55,33 @@ EXIT_USR   =  3
 #Utils ---------------------------------------------------------------------------------------------
 
 def update_label():
-    global active_user, menu_label, menu_to_be_displayed, usr_to_be_displayed
+    global current_State, current_Usr_State, active_user, menu_label, menu_to_be_displayed, usr_to_be_displayed
     """Actualiza el label_ID según el estado actual."""
 
     menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
     usr_to_be_displayed.set(f"Usuario: {active_user}")
-
-    if current_State == START_MENU:
+    
+    if (current_Usr_State == USR_INACTIVE):
         label_ID.config(text="User ID: ")
         hide_all()
-    elif current_State == MAIN_MENU:
-        label_ID.config(text="Opciones: ")
+    elif (current_Usr_State == USR_PROGRESS):
+        label_ID.config(text="Password: ")
         hide_all()
-        show_main_menu()
-    elif current_State == USER_MODE_MENU:
-        label_ID.config(text="Opciones: ")
+    elif (current_Usr_State == USR_ACTIVE):
+        if current_State == START_MENU:
+            label_ID.config(text="User ID: ")
+            hide_all()
+        elif current_State == MAIN_MENU:
+            label_ID.config(text="Opciones: ")
+            hide_all()
+            show_main_menu()
+        elif current_State == USER_MODE_MENU:
+            label_ID.config(text="Opciones: ")
+            hide_all()
+            show_admin_menu()
+    else:
+        label_ID.config(text="User ID: ")
         hide_all()
-        show_admin_menu()
 
 def hide_all():
     hide_main_menu()
@@ -97,7 +113,10 @@ def hide_admin_menu():
 #-----------------------------------------------------------------------------------------
 
 def on_button_click(value):
-    global current_State, sequence, start_menu_label, active_user
+    global current_State, current_Usr_State, usr_ID, sequence, start_menu_label, active_user
+    tmp_usr    = "NA"
+    tmp_pwd    = "NA"
+    is_match   = 0
 
     if value == "Pánico" or value == "Bomberos":
         # Cambiar el color del indicador L1 a verde cuando se presiona "Batería"
@@ -110,14 +129,42 @@ def on_button_click(value):
 
     elif value == "Enter":
         if (current_State == START_MENU and (sequence[0] != "#" and sequence[0] != "*")):
-            current_State = MAIN_MENU  # Cambiar al menú principal       
-            active_user = get_string(sequence)
-            menu_label = "USER MENU"
-            update_label()  # Actualizar el label
+            
+            if (current_Usr_State == USR_INACTIVE):
+                tmp_usr = get_string(sequence)
+                for user, data in Users_list.items():
+                    if data["ID"] == tmp_usr:
+                        is_match = True
+                        usr_ID = user
+                
+                if (is_match == True):
+                    active_user = tmp_usr
+                    current_Usr_State = USR_PROGRESS
+                    update_label()  # Actualizar el label
+
+                else:
+                    print("Invalid USR")
+                    current_State == START_MENU
+                    update_label()  # Actualizar el label
+
+            elif (current_Usr_State == USR_PROGRESS):
+                tmp_pwd = get_string(sequence)
+                if (Users_list[usr_ID]["PWD"] == tmp_pwd):
+                    current_Usr_State = USR_ACTIVE
+                    current_State = MAIN_MENU  # Cambiar al menú principal
+                    menu_label = "USER MENU"
+                    usr_ID = "NA"
+                    update_label()  # Actualizar el label
+
+                else:
+                    print("Invalid PWD")
+                    current_State == START_MENU
+                    update_label()  # Actualizar el label
         
         elif (current_State == MAIN_MENU and get_string(sequence) == str(EXIT_USR)):
             current_State = START_MENU  # Cambiar al menú start
             menu_label = "START MENU"
+            current_Usr_State = USR_INACTIVE
             update_label()  # Actualizar el label
 
         elif (current_State == START_MENU):
@@ -152,6 +199,7 @@ def on_button_click(value):
 
             if (status == ERROR_MODE or status == EXIT_USR):
                 menu_label = "START MENU"
+                current_Usr_State = USR_INACTIVE
                 current_State = START_MENU  # Volver al estado inicial
                 update_label()  # Actualizar el label
 
