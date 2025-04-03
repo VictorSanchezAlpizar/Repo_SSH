@@ -33,6 +33,7 @@ def get_code(seq):
     code = ''
     for i in seq[1:-1]:
         code += i
+    print(f"[DEBUG] Código ingresado: {code}")
     return code
 
 def get_string(seq):
