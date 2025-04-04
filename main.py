@@ -18,60 +18,12 @@ def handle_sensor_alert(triggered_sensors):
     print(f"¡ALERTA! Sensores activados: {', '.join(triggered_sensors)}")
     label_alerta.config(bg="red", text=f"Alerta: {triggered_sensors[0]}")
 
-modo0_monitor = Modo0Monitor(root, handle_sensor_alert)
-modo1_monitor = Modo1Monitor(root, handle_sensor_alert)
-
-# Crear y colocar los botones en la interfaz principal
-buttons = [
-    '1', '2', '3', 'Esc',
-    '4', '5', '6', 'Enter',
-    '7', '8', '9', 'Pánico',
-    '*', '0', '#', 'Bomberos'
-]
-
-row_custom        = 0
-col_custom        = 0
-current_State     = 0
-current_Usr_State = 0
-usr_ID            = "NA"
-sequence          = []
-main_menu_labels  = []
-admin_menu_labels = []
-
-menu_to_be_displayed = tk.StringVar(value="MODE INIT")
-menu_label = "DESARMADO"
-
-usr_to_be_displayed = tk.StringVar(value="USR NS")
-active_user = "0"
-
-ps_to_be_displayed = tk.StringVar(value="Power Supply")
-current_PS         = "Principal"
-usr_Bat_limit      = -1
-
+modo0_monitor           = Modo0Monitor(root, handle_sensor_alert)
+modo1_monitor           = Modo1Monitor(root, handle_sensor_alert)
+menu_to_be_displayed    = tk.StringVar(value="MODE INIT")
+usr_to_be_displayed     = tk.StringVar(value="USR NS")
+ps_to_be_displayed      = tk.StringVar(value="Power Supply")
 bat_lvl_to_be_displayed = tk.StringVar(value="Batery Level")
-
-#States
-START_MENU              = 0
-MAIN_MENU               = 1
-USER_MODE_MENU          = 2
-MODO_0_MENU             = 3
-MODO_1_MENU             = 4
-MODO_DESARMADO_MENU     = 5
-MODO_AHORRO             = 6
-
-USR_INACTIVE = 0
-USR_PROGRESS = 1
-USR_END      = 2
-USR_ACTIVE   = 3
-
-#ERROR_CODES
-ERROR_MODE = -1
-EXIT_MODE  =  0
-EXIT_USR   =  3
-
-#PS CODES
-CODE_BATERIA  = "Bateria"
-CODE_PRINCIPAL = "Principal"
 
 #Utils ---------------------------------------------------------------------------------------------
 def verify_PS(*args):
@@ -103,7 +55,7 @@ def update_label():
         label_ID.config(text="Password: ")
         hide_all()
     elif (current_Usr_State == USR_END):
-        label_ID.config(text="Batery LVL (0-100): ")
+        label_ID.config(text="Batery LVL (1-100): ")
         hide_all()
     elif (current_Usr_State == USR_ACTIVE):
         if current_State == START_MENU:
@@ -224,7 +176,7 @@ def on_button_click(value):
             elif (current_Usr_State == USR_END):
                 try:
                     tmp_lvl = int(get_string(sequence))
-                    if (tmp_lvl >=0 or tmp_lvl < 100):
+                    if (tmp_lvl >=1 or tmp_lvl < 100):
                         usr_Bat_limit = tmp_lvl
                         current_Usr_State = USR_ACTIVE
                         current_State = MAIN_MENU  # Cambiar al menú principal
