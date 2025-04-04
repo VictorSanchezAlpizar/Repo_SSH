@@ -176,15 +176,22 @@ def on_button_click(value):
             elif (current_Usr_State == USR_END):
                 try:
                     tmp_lvl = int(get_string(sequence))
-                    if (tmp_lvl >=1 or tmp_lvl < 100):
+                    if (tmp_lvl >=1 and tmp_lvl < 100):
                         usr_Bat_limit = tmp_lvl
                         current_Usr_State = USR_ACTIVE
                         current_State = MAIN_MENU  # Cambiar al menú principal
                         menu_label = "USER MENU"
                         usr_ID = "NA"
                         update_label()  # Actualizar el label
+                    else:
+                        print("Invalid LVL")
+                        menu_label = "START MENU"
+                        current_State = START_MENU
+                        current_Usr_State = USR_INACTIVE
+                        update_label()  # Actualizar el label
                 except ValueError:
                     print("Invalid LVL")
+                    menu_label = "START MENU"
                     current_State == START_MENU
                     current_Usr_State = USR_INACTIVE
                     update_label()  # Actualizar el label
