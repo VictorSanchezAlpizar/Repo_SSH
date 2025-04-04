@@ -241,4 +241,5 @@ def read_Users_list():
         Users_list = json.load(file)
     print("Lista de usuarios actualizada:", Users_list)
 
+save_Users_list()
 read_Users_list()
