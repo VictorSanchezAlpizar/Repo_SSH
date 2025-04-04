@@ -26,6 +26,11 @@ ps_to_be_displayed      = tk.StringVar(value="Power Supply")
 bat_lvl_to_be_displayed = tk.StringVar(value="Batery Level")
 
 #Utils ---------------------------------------------------------------------------------------------
+def init_menu():
+    menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
+    bat_lvl_to_be_displayed.set(f"Nivel Bateria: {nivel_bateria.get()}%")
+    ps_to_be_displayed.set(f"Fuente Alimentación: {current_PS}")
+
 def verify_PS(*args):
     global current_PS, ps_to_be_displayed, usr_Bat_limit, current_PS
     """Función se ejecuta cada vez que el nivel de voltaje cambia"""
@@ -51,16 +56,20 @@ def update_label():
     if (current_Usr_State == USR_INACTIVE):
         label_ID.config(text="User ID: ")
         hide_all()
+        show_start_menu()
     elif (current_Usr_State == USR_PROGRESS):
         label_ID.config(text="Password: ")
         hide_all()
+        show_start_menu()
     elif (current_Usr_State == USR_END):
         label_ID.config(text="Batery LVL (1-100): ")
         hide_all()
+        show_start_menu()
     elif (current_Usr_State == USR_ACTIVE):
         if current_State == START_MENU:
             label_ID.config(text="User ID: ")
             hide_all()
+            show_start_menu()
         elif current_State == MAIN_MENU:
             label_ID.config(text="Opciones: ")
             hide_all()
@@ -89,8 +98,13 @@ def update_label():
         hide_all()
 
 def hide_all():
+    hide_start_menu()
     hide_main_menu()
     hide_admin_menu()
+
+def show_start_menu():
+    for label in start_menu_labels:
+        label.grid()
 
 def show_main_menu():
     """Muestra las líneas de texto adicionales en la pantalla principal."""
@@ -101,6 +115,11 @@ def show_admin_menu():
     """Muestra Menu modo Admin."""
     for label in admin_menu_labels:
         label.grid()
+
+def hide_start_menu():
+    """Oculta las líneas de texto adicionales en la pantalla principal."""
+    for label in start_menu_labels:
+        label.grid_remove()
 
 def hide_main_menu():
     """Oculta las líneas de texto adicionales en la pantalla principal."""
@@ -390,6 +409,13 @@ for button in buttons:
         row_custom += 1
 
 # Crear las líneas de texto adicionales (inicialmente ocultas)
+start_menu_labels = [
+    tk.Label(root, textvariable=ps_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=bat_lvl_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10))
+]
+
+
 main_menu_labels = [
     tk.Label(root, textvariable=usr_to_be_displayed, font=("Arial", 10)),
     tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10)),
@@ -412,6 +438,10 @@ admin_menu_labels = [
 
 # Colocar las líneas de texto adicionales en la interfaz (inicialmente ocultas)
 row_custom = 1
+for i, label in enumerate(start_menu_labels):
+    label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
+    #label.grid_remove()  # Ocultar inicialmente
+
 for i, label in enumerate(main_menu_labels):
     label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
     label.grid_remove()  # Ocultar inicialmente
@@ -436,4 +466,5 @@ tk.Label(root, text="SSH-101", font=('Arial', 14)).grid(row=row_custom+2, column
 # Botón para abrir la interfaz secundaria
 tk.Button(root, text="Abrir Interfaz Sim", command=open_secondary_interface).grid(row=row_custom+4, column=0, columnspan=4)
 
+init_menu()
 root.mainloop()
