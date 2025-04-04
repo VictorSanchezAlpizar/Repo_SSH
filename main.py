@@ -18,53 +18,33 @@ def handle_sensor_alert(triggered_sensors):
     print(f"¡ALERTA! Sensores activados: {', '.join(triggered_sensors)}")
     label_alerta.config(bg="red", text=f"Alerta: {triggered_sensors[0]}")
 
-modo0_monitor = Modo0Monitor(root, handle_sensor_alert)
-modo1_monitor = Modo1Monitor(root, handle_sensor_alert)
-
-# Crear y colocar los botones en la interfaz principal
-buttons = [
-    '1', '2', '3', 'Esc',
-    '4', '5', '6', 'Enter',
-    '7', '8', '9', 'Pánico',
-    '*', '0', '#', 'Bomberos'
-]
-
-row_custom        = 0
-col_custom        = 0
-current_State     = 0
-current_Usr_State = 0
-usr_ID            = "NA"
-
-sequence = []
-
-main_menu_labels = []
-admin_menu_labels = []
-
-menu_to_be_displayed = tk.StringVar(value="MODE INIT")
-menu_label = "DESARMADO"
-
-usr_to_be_displayed = tk.StringVar(value="USR NS")
-active_user = "0"
-
-#States
-START_MENU              = 0
-MAIN_MENU               = 1
-USER_MODE_MENU          = 2
-MODO_0_MENU             = 3
-MODO_1_MENU             = 4
-MODO_DESARMADO_MENU     = 5
-MODO_AHORRO             = 6
-
-USR_INACTIVE = 0
-USR_PROGRESS = 1
-USR_ACTIVE   = 2
-
-#ERROR_CODES
-ERROR_MODE = -1
-EXIT_MODE  =  0
-EXIT_USR   =  3
+modo0_monitor           = Modo0Monitor(root, handle_sensor_alert)
+modo1_monitor           = Modo1Monitor(root, handle_sensor_alert)
+menu_to_be_displayed    = tk.StringVar(value="MODE INIT")
+usr_to_be_displayed     = tk.StringVar(value="USR NS")
+ps_to_be_displayed      = tk.StringVar(value="Power Supply")
+bat_lvl_to_be_displayed = tk.StringVar(value="Batery Level")
 
 #Utils ---------------------------------------------------------------------------------------------
+def init_menu():
+    menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
+    bat_lvl_to_be_displayed.set(f"Nivel Bateria: {nivel_bateria.get()}%")
+    ps_to_be_displayed.set(f"Fuente Alimentación: {current_PS}")
+
+def verify_PS(*args):
+    global current_PS, ps_to_be_displayed, usr_Bat_limit, current_PS
+    """Función se ejecuta cada vez que el nivel de voltaje cambia"""
+    bat_lvl_to_be_displayed.set(f"Nivel Bateria: {nivel_bateria.get()}%")
+    ps_to_be_displayed.set(f"Fuente Alimentación: {current_PS}")
+
+    if (nivel_bateria.get() < usr_Bat_limit and current_PS == CODE_BATERIA):
+        label_bateria.config(bg="green", text="Batería")
+    else:
+        label_bateria.config(bg="white", text="Batería")
+
+#Variables required to track the Batery level
+nivel_bateria = tk.IntVar(value=50)
+nivel_bateria.trace_add("write", verify_PS)
 
 def update_label():
     global current_State, current_Usr_State, active_user, menu_label, menu_to_be_displayed, usr_to_be_displayed
@@ -76,13 +56,20 @@ def update_label():
     if (current_Usr_State == USR_INACTIVE):
         label_ID.config(text="User ID: ")
         hide_all()
+        show_start_menu()
     elif (current_Usr_State == USR_PROGRESS):
         label_ID.config(text="Password: ")
         hide_all()
+        show_start_menu()
+    elif (current_Usr_State == USR_END):
+        label_ID.config(text="Batery LVL (1-100): ")
+        hide_all()
+        show_start_menu()
     elif (current_Usr_State == USR_ACTIVE):
         if current_State == START_MENU:
             label_ID.config(text="User ID: ")
             hide_all()
+            show_start_menu()
         elif current_State == MAIN_MENU:
             label_ID.config(text="Opciones: ")
             hide_all()
@@ -111,8 +98,13 @@ def update_label():
         hide_all()
 
 def hide_all():
+    hide_start_menu()
     hide_main_menu()
     hide_admin_menu()
+
+def show_start_menu():
+    for label in start_menu_labels:
+        label.grid()
 
 def show_main_menu():
     """Muestra las líneas de texto adicionales en la pantalla principal."""
@@ -123,6 +115,11 @@ def show_admin_menu():
     """Muestra Menu modo Admin."""
     for label in admin_menu_labels:
         label.grid()
+
+def hide_start_menu():
+    """Oculta las líneas de texto adicionales en la pantalla principal."""
+    for label in start_menu_labels:
+        label.grid_remove()
 
 def hide_main_menu():
     """Oculta las líneas de texto adicionales en la pantalla principal."""
@@ -140,9 +137,10 @@ def hide_admin_menu():
 #-----------------------------------------------------------------------------------------
 
 def on_button_click(value):
-    global current_State, current_Usr_State, usr_ID, sequence, start_menu_label, active_user
+    global current_State, current_Usr_State, usr_ID, usr_Bat_limit, sequence, start_menu_label, active_user
     tmp_usr    = "NA"
     tmp_pwd    = "NA"
+    tmp_lvl    = 0
     is_match   = 0
 
     if value == "Pánico" or value == "Bomberos":
@@ -167,25 +165,54 @@ def on_button_click(value):
                 if (is_match == True):
                     active_user = tmp_usr
                     current_Usr_State = USR_PROGRESS
+                    is_match = False
                     update_label()  # Actualizar el label
 
                 else:
                     print("Invalid USR")
-                    current_State == START_MENU
+                    current_State = START_MENU
                     update_label()  # Actualizar el label
 
             elif (current_Usr_State == USR_PROGRESS):
                 tmp_pwd = get_string(sequence)
                 if (Users_list[usr_ID]["PWD"] == tmp_pwd):
-                    current_Usr_State = USR_ACTIVE
-                    current_State = MAIN_MENU  # Cambiar al menú principal
-                    menu_label = "USER MENU"
-                    usr_ID = "NA"
-                    update_label()  # Actualizar el label
+                    if (usr_Bat_limit != -1):
+                        current_Usr_State = USR_ACTIVE
+                        current_State = MAIN_MENU  # Cambiar al menú principal
+                        menu_label = "USER MENU"
+                        usr_ID = "NA"
+                        update_label()  # Actualizar el label
+                    else:
+                        current_Usr_State = USR_END
+                        update_label()  # Actualizar el label        
 
                 else:
                     print("Invalid PWD")
+                    current_State = START_MENU
+                    current_Usr_State = USR_INACTIVE
+                    update_label()  # Actualizar el label
+
+            elif (current_Usr_State == USR_END):
+                try:
+                    tmp_lvl = int(get_string(sequence))
+                    if (tmp_lvl >=1 and tmp_lvl < 100):
+                        usr_Bat_limit = tmp_lvl
+                        current_Usr_State = USR_ACTIVE
+                        current_State = MAIN_MENU  # Cambiar al menú principal
+                        menu_label = "USER MENU"
+                        usr_ID = "NA"
+                        update_label()  # Actualizar el label
+                    else:
+                        print("Invalid LVL")
+                        menu_label = "START MENU"
+                        current_State = START_MENU
+                        current_Usr_State = USR_INACTIVE
+                        update_label()  # Actualizar el label
+                except ValueError:
+                    print("Invalid LVL")
+                    menu_label = "START MENU"
                     current_State == START_MENU
+                    current_Usr_State = USR_INACTIVE
                     update_label()  # Actualizar el label
         
         elif (current_State == MAIN_MENU and get_string(sequence) == str(EXIT_USR)):
@@ -199,14 +226,50 @@ def on_button_click(value):
             current_command = get_string(sequence)
             status = admin_mode_sm(current_command)
 
+            #---------------------------------------
+            #MAIN ADMIN
+            #---------------------------------------
+
+            if (status == IDLE):
+                label_ID.config(text="Opciones: ")
+            
+            #---------------------------------------
+            #REGISTER / MODIFY USER
+            #---------------------------------------
+
             if (status == REG_USR):
                 label_ID.config(text="Nuevo USR: ")
+            elif (status == REG_USR_2):
+                label_ID.config(text="Nueva PWD: ")
+            
+            #---------------------------------------
+            #REGISTER SENSOR
+            #---------------------------------------
+
             elif (status == REG_SNR):
-                label_ID.config(text="Nuevo SNR: ")
+                label_ID.config(text="Nuevo SNR (1-16): ")
+            elif (status == REG_SNR_2):
+                label_ID.config(text="Zona (0-1): ")
+
+            #---------------------------------------
+            #MODIFY SENSOR
+            #---------------------------------------
+
             elif (status == MOD_SNR):
-                label_ID.config(text="Modificar SNR: ")
+                label_ID.config(text="Modificar SNR (1-16): ")
+            elif (status == MOD_SNR_2):
+                label_ID.config(text="Zona (0-1,2:N_INST): ")
+
+            #---------------------------------------
+            #MODIFY TEL
+            #---------------------------------------
+
             elif (status == REG_TEL):
                 label_ID.config(text="Nuevo TEL: ")
+
+            #---------------------------------------
+            #ERROR IN PROGRESS
+            #---------------------------------------
 
             if (status == ERROR_MODE or status == EXIT_USR):
                 menu_label = "START MENU"
@@ -265,7 +328,9 @@ def on_button_click(value):
                 else:
                     print("Invalid command. Returning to START MENU")
                     current_State = START_MENU  # Volver al estado inicial
+                    current_Usr_State == USR_INACTIVE
                     menu_label = "START MENU"
+                    update_label()
 
             update_label()  # Actualizar el label
         entry_ID.delete(0, tk.END)
@@ -277,12 +342,15 @@ def on_button_click(value):
         sequence.append(value)  # Añadir el valor a la secuencia
 
 def turn_on_main_button(value):
+    global current_PS
     if value == "Sim falla electrica ON":
         # Cambiar el estado del botón en la interfaz principal
-        label_bateria.config(bg="green", text="Batería")
+        current_PS = CODE_BATERIA
+        #label_bateria.config(bg="green", text="Batería")
     if value == "Sim falla electrica OFF":
         # Cambiar el estado del botón en la interfaz principal
-        label_bateria.config(bg="white", text="Batería")
+        current_PS = CODE_PRINCIPAL
+        #label_bateria.config(bg="white", text="Batería")
     if value == "Sim Bomberos PASS":
         # Cambiar el estado del botón en la interfaz principal
         label_alerta.config(bg="white", text="Alerta")
@@ -290,16 +358,25 @@ def turn_on_main_button(value):
         sim_sensors.open_sim_sensor_falla()  # Usamos la clase
 
 def open_secondary_interface():
+    global nivel_bateria
     secondary_window = tk.Toplevel(root)
     secondary_window.minsize(width=25, height=25)
     secondary_window.config(padx=5, pady=5)
     secondary_window.title("Interfaz Secundaria")
 
     # Botón en la interfaz secundaria para encender el botón en la principal
-    tk.Button(secondary_window, text="Sim falla electrica ON", command=lambda b="Sim falla electrica ON": turn_on_main_button(b)).pack(pady=5)
-    tk.Button(secondary_window, text="Sim falla electrica OFF", command=lambda b="Sim falla electrica OFF": turn_on_main_button(b)).pack(pady=10)
+    tk.Button(secondary_window, text="Sim falla PS Principal ON", command=lambda b="Sim falla electrica ON": turn_on_main_button(b)).pack(pady=5)
+    tk.Button(secondary_window, text="Sim falla PS Principal OFF", command=lambda b="Sim falla electrica OFF": turn_on_main_button(b)).pack(pady=10)
     tk.Button(secondary_window, text="Sim Sensor falla", command=lambda b="Sim Sensor falla": turn_on_main_button(b)).pack(pady=15)
     tk.Button(secondary_window, text="Sim Bomberos PASS", command=lambda b="Sim Bomberos PASS": turn_on_main_button(b)).pack(pady=20)
+
+    # Barra deslizante
+    scale = tk.Scale(secondary_window, from_=0, to=100, orient="horizontal", variable=nivel_bateria, label="Nivel")
+    scale.pack(pady=10)
+
+    # Mostrar el valor actual de la barra
+    label = tk.Label(secondary_window)
+    label.pack()
 
 #------------------------------------------------------------------------------------------------------   
 # Main interface
@@ -332,14 +409,25 @@ for button in buttons:
         row_custom += 1
 
 # Crear las líneas de texto adicionales (inicialmente ocultas)
+start_menu_labels = [
+    tk.Label(root, textvariable=ps_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=bat_lvl_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10))
+]
+
+
 main_menu_labels = [
     tk.Label(root, textvariable=usr_to_be_displayed, font=("Arial", 10)),
     tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=ps_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=bat_lvl_to_be_displayed, font=("Arial", 10)),
     tk.Label(root, text="3. Cerrar sesión", font=("Arial", 10))
 ]
 
 admin_menu_labels = [
     tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=ps_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=bat_lvl_to_be_displayed, font=("Arial", 10)),
     tk.Label(root, text="1. Registro de Usuarios", font=("Arial", 10)),
     tk.Label(root, text="2. Registro de Sensores", font=("Arial", 10)),
     tk.Label(root, text="3. Modificar Sensor", font=("Arial", 10)),
@@ -350,6 +438,10 @@ admin_menu_labels = [
 
 # Colocar las líneas de texto adicionales en la interfaz (inicialmente ocultas)
 row_custom = 1
+for i, label in enumerate(start_menu_labels):
+    label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
+    #label.grid_remove()  # Ocultar inicialmente
+
 for i, label in enumerate(main_menu_labels):
     label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
     label.grid_remove()  # Ocultar inicialmente
@@ -374,4 +466,5 @@ tk.Label(root, text="SSH-101", font=('Arial', 14)).grid(row=row_custom+2, column
 # Botón para abrir la interfaz secundaria
 tk.Button(root, text="Abrir Interfaz Sim", command=open_secondary_interface).grid(row=row_custom+4, column=0, columnspan=4)
 
+init_menu()
 root.mainloop()

@@ -53,6 +53,8 @@ def read_sensors_list():
         Sensors_list = json.load(file)
     print("Lista de sensores actualizada:", Sensors_list)
 
+read_sensors_list()
+
 """
 HOWTO: Guardar y leer de "memoria" la lista de sensores
 
