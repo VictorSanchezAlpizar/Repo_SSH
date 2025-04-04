@@ -34,6 +34,7 @@ col_custom        = 0
 current_State     = 0
 current_Usr_State = 0
 usr_ID            = "NA"
+nivel_bateria = tk.IntVar(value=50)
 
 sequence = []
 
@@ -329,6 +330,7 @@ def turn_on_main_button(value):
         sim_sensors.open_sim_sensor_falla()  # Usamos la clase
 
 def open_secondary_interface():
+    global nivel_bateria
     secondary_window = tk.Toplevel(root)
     secondary_window.minsize(width=25, height=25)
     secondary_window.config(padx=5, pady=5)
@@ -339,6 +341,14 @@ def open_secondary_interface():
     tk.Button(secondary_window, text="Sim falla electrica OFF", command=lambda b="Sim falla electrica OFF": turn_on_main_button(b)).pack(pady=10)
     tk.Button(secondary_window, text="Sim Sensor falla", command=lambda b="Sim Sensor falla": turn_on_main_button(b)).pack(pady=15)
     tk.Button(secondary_window, text="Sim Bomberos PASS", command=lambda b="Sim Bomberos PASS": turn_on_main_button(b)).pack(pady=20)
+
+    # Barra deslizante
+    scale = tk.Scale(secondary_window, from_=0, to=100, orient="horizontal", variable=nivel_bateria, label="Nivel")
+    scale.pack(pady=10)
+
+    # Mostrar el valor actual de la barra
+    label = tk.Label(secondary_window)
+    label.pack()
 
 #------------------------------------------------------------------------------------------------------   
 # Main interface
