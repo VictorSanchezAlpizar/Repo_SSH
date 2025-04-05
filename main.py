@@ -18,6 +18,7 @@ def handle_sensor_alert(triggered_sensors):
     print(f"¡ALERTA! Sensores activados: {', '.join(triggered_sensors)}")
     label_alerta.config(bg="red", text=f"Alerta: {triggered_sensors[0]}")
 
+
 modo0_monitor           = Modo0Monitor(root, handle_sensor_alert)
 modo1_monitor           = Modo1Monitor(root, handle_sensor_alert)
 menu_to_be_displayed    = tk.StringVar(value="MODE INIT")
@@ -26,6 +27,24 @@ ps_to_be_displayed      = tk.StringVar(value="Power Supply")
 bat_lvl_to_be_displayed = tk.StringVar(value="Batery Level")
 
 #Utils ---------------------------------------------------------------------------------------------
+def format_alert_message(num_tel, usr, alert_type, alert_snr = 0):
+    global alert_message_GSM
+
+    alert_message_GSM["num_tel_Agencia"] = num_tel
+    alert_message_GSM["usr_Active"] = usr
+    alert_message_GSM["Alert_Type"] = alert_type
+    alert_message_GSM["Alerted_snr"] = alert_snr
+    
+    if (alert_message_GSM["Alert_Type"] == CODE_INCENDIO or 
+        alert_message_GSM["Alert_Type"] == CODE_PANICO):
+        with open("utils.txt", "w") as file:
+            json.dump(alert_message_GSM, file, indent=1)
+    else:
+        with open("utils.txt", "w") as file:
+            json.dump(alert_message_GSM, file, indent=1)
+    
+    print("Mensaje preparado:", alert_message_GSM)
+
 def init_menu():
     menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
     bat_lvl_to_be_displayed.set(f"Nivel Bateria: {nivel_bateria.get()}%")
@@ -265,7 +284,9 @@ def on_button_click(value):
             #---------------------------------------
 
             elif (status == REG_TEL):
-                label_ID.config(text="Nuevo TEL: ")
+                label_ID.config(text="Extensión (#XYZ): ")
+            elif (status == REG_TEL_2):
+                label_ID.config(text="Numero Agencia Seguridad: ")
 
             #---------------------------------------
             #ERROR IN PROGRESS

@@ -30,10 +30,12 @@ Users_list = {
     "User_5" : {"ID": "5", "PWD": "5555"},
 }
 
-Phone_number = ""
+utils_SSH = {
+    "Agencia_Seguridad" : "+50612345678"
+}
 
 def admin_mode_sm(cmd):
-    global current_state, active, Sensors_list, Users_list, tmp_1, tmp_2
+    global current_state, active, Sensors_list, Users_list, tmp_1, tmp_2, utils_SSH
     status = 0
     #Actualizar datos con Usuarios almacenados en memoria
     save_Users_list()
@@ -205,19 +207,53 @@ def admin_mode_sm(cmd):
     #--------------------------------------------------------------
     #--------------------------------------------------------------
 
-    elif (current_state == REG_TEL):
-        if (active == False):
-            active = True
-            status = REG_USR
-        else:
-            active = False
+    elif (current_state == REG_TEL or current_state == REG_TEL_2):
+        if (current_state == REG_TEL):
+            if (active == False):
+                active = True
+                status = REG_TEL
+                print("HERE 1")
+            else:
+                active = False
+                tmp_1 = "#"+cmd
+                if (len(tmp_1) == 4): #Extension len
+                    tmp_2 = snr
+                    status = REG_TEL_2
+                    current_state = REG_TEL_2
+                    utils_SSH["Agencia_Seguridad"] = tmp_1
+                    print("HERE 2")
+                        
+                if (current_state != REG_TEL_2):
+                    status = IDLE
+                    print("Invalid entry.")
+                    status = IDLE
+                    current_state = IDLE
 
-    elif (current_state == EXIT):
-        status = ERR
-    else:
-        print("Invalid.")
-        status = ERR
-    return status
+
+        elif (current_state == REG_TEL_2):
+            try:
+                cmd = int(cmd)
+                if (len(cmd) == 8):
+                    utils_SSH["Agencia_Seguridad"] += cmd
+                    save_utils_list()
+                    print("HERE 3")
+                else:
+                    status = IDLE
+                    print("Invalid entry.")
+                    utils_SSH["Agencia_Seguridad"] = "+50612345678"
+                    print("Setting default invalid phone number")
+                    status = IDLE
+                    current_state = IDLE
+            except ValueError:
+                status = ERR
+                print("Invalid entry.")
+            status = IDLE
+            current_state = IDLE
+
+#--------------------------------------------------------------------------------
+#END ADMIN MODE
+#--------------------------------------------------------------------------------
+
 
 # IMPLEMENTS: SW-ID-XX
 def actualizar_User(usr_name, value):
@@ -241,5 +277,18 @@ def read_Users_list():
         Users_list = json.load(file)
     print("Lista de usuarios actualizada:", Users_list)
 
+def save_utils_list():
+    with open("utils.txt", "w") as file:
+        json.dump(utils_SSH, file, indent=1)
+    print("Lista de utilidades almacenada en memoria")
+
+def read_Users_list():
+    global utils_SSH
+    with open("utils.txt", "r") as file:
+        utils_SSH = json.load(file)
+    print("Lista de usuarios actualizada:", utils_SSH)
+
 save_Users_list()
+read_Users_list()
+save_utils_list()
 read_Users_list()

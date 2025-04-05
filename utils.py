@@ -22,6 +22,8 @@ EXIT_USR             =  3
 #PS CODES
 CODE_BATERIA         = "Bateria"
 CODE_PRINCIPAL       = "Principal"
+CODE_PANICO          = "Panico"
+CODE_INCENDIO        = "Incendio"
 
 row_custom           = 0
 col_custom           = 0
@@ -44,3 +46,10 @@ buttons = [
     '7', '8', '9', 'Pánico',
     '*', '0', '#', 'Bomberos'
 ]
+
+alert_message_GSM = {
+    "num_tel_Agencia" : "+50612345678",
+    "usr_Active" : 0,
+    "Alert_Type" : 0,
+    "Alerted_snr" : 0
+}
