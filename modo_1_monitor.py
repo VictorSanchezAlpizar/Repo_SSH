@@ -25,6 +25,7 @@ class Modo1Monitor:
             self.thread.start()
             print("[MODO 1] Monitoreo iniciado")
 
+    # SW-Req: [SW-ID-67]
     def stop_monitoring(self):
         """Detiene el monitoreo de manera segura"""
         if self.running:
@@ -66,6 +67,7 @@ class Modo1Monitor:
 
     def _trigger_delayed_alert(self, sensor):
         """Activa alerta después del retardo para S1"""
+        # SW-Req: [SW-ID-76]
         if self.running and self.current_state == "delayed":
             self.current_state = "alerting"
             self.root.after(0, lambda: self.alert_callback([sensor]))
@@ -102,6 +104,7 @@ class Modo1Monitor:
 
     def check_desarmado_during_delay(self):
         """Para ser llamado cuando se ingresa código de desarmado"""
+        # SW-Req: [SW-ID-77]
         if self.current_state == "delayed":
             self._cancel_s1_delay()
             print("[MODO 1] Alerta cancelada durante retardo S1")

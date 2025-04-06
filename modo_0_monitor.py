@@ -24,6 +24,7 @@ class Modo0Monitor:
             self.thread.start()
             print("[MODO 0] Monitoreo iniciado")
 
+    # SW-Req: [SW-ID-65]
     def stop_monitoring(self):
         """Detiene el monitoreo de manera segura"""
         if self.running:
