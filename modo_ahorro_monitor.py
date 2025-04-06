@@ -3,97 +3,156 @@ import time
 from sensors_list import *
 
 class ModoAhorroMonitor:
-    def __init__(self, root, alert_callback, main_sensors=["S1"], timeout=5):
+    def __init__(self, root, alert_callback):
         self.root = root
         self.alert_callback = alert_callback
-        self.main_sensors = main_sensors  # Sensores principales (siempre activos)
-        self.timeout = timeout  # Tiempo para desactivar secundarios (ej. 300s = 5min)
+        self.main_sensors = ["S1", "S7"]  # Sensores principales
+        self.timeout = 5                   # 5s para desactivar secundarios
+        self.evaluation_time = 7           # 7s para evaluar secundarios
         self.running = False
-        self.thread = None
-        self.check_interval = 0.5  # Igual que en Modo0
-        self.last_activity_time = None
-        self.secondary_sensors = self._get_secondary_sensors()
+        self.alert_active = False
+        self.secondary_sensors = []
+        self.timers = {}
+        self.evaluation_active = False  # Nuevo flag para controlar evaluación
 
     def _get_secondary_sensors(self):
-        """Lista de sensores secundarios (instalados y no principales)"""
-        return [
-            name for name, data in Sensors_list.items()
-            if data["Install"] == INSTALL and name not in self.main_sensors
-        ]
+        """Obtiene lista actualizada de sensores secundarios"""
+        return [name for name, data in Sensors_list.items()
+                if data["Install"] == INSTALL and name not in self.main_sensors]
 
     def start_monitoring(self):
-        """Inicia el modo ahorro: desactiva secundarios y monitorea principales"""
+        """Inicia el modo ahorro de energía"""
         if not self.running:
-            self._set_secondary_sensors_install(OFF_MODE)  # Desactiva secundarios
             self.running = True
-            self.last_activity_time = time.time()
-            self.thread = threading.Thread(target=self._monitor_loop, daemon=True)
-            self.thread.start()
-            print(f"[MODO AHORRO] Iniciado. Timeout: {self.timeout}s")
-
-    def _monitor_loop(self):
-        """Bucle principal idéntico en estructura a Modo0"""
-        while self.running:
-            if self._check_main_sensors_activated():
-                self._handle_activity()
-            self._check_inactivity()
-            time.sleep(self.check_interval)
-
-    def _check_main_sensors_activated(self):
-        """Misma lógica que Modo0 pero solo para main_sensors"""
-        return any(
-            Sensors_list[name]["Status"] == ACTIVE
-            for name in self.main_sensors
-            if name in Sensors_list and Sensors_list[name]["Install"] == INSTALL
-        )
-
-    def _handle_activity(self):
-        """Al detectar actividad en sensores principales"""
-        if self._are_secondaries_disabled():
-            self._reactivate_secondaries()
-        self.last_activity_time = time.time()  # Reinicia contador
-
-    def _check_inactivity(self):
-        """Desactiva secundarios si pasa el timeout sin actividad"""
-        if (time.time() - self.last_activity_time > self.timeout 
-            and not self._are_secondaries_disabled()):
+            self.alert_active = False
+            self.evaluation_active = False
+            self.secondary_sensors = self._get_secondary_sensors()
+            print(f"[MODO AHORRO] Iniciado")
+            
             self._deactivate_secondaries()
 
-    def _are_secondaries_disabled(self):
-        """Verifica si los secundarios están OFF_MODE"""
-        return all(
-            Sensors_list[name]["Install"] == OFF_MODE 
-            for name in self.secondary_sensors 
-            if name in Sensors_list
-        )
+            # 2. Mensaje y timer para empezar monitoreo
+            print(f"[MODO AHORRO] Tienes {self.timeout}s para salir")
+            self.timer = threading.Timer(self.timeout, self._start_monitoring_real)
+            self.timer.start()
 
-    def _reactivate_secondaries(self):
-        """Reactiva sensores secundarios (Install=INSTALL)"""
-        self._set_secondary_sensors_install(INSTALL)
-        print("[MODO AHORRO] Sensores secundarios reactivados")
+    def _start_monitoring_real(self):
+        """Inicia el monitoreo después del tiempo de salida"""
+        print("[MODO AHORRO] Monitoreo activado")
+        threading.Thread(target=self._monitor_loop, daemon=True).start()
+
+    def _monitor_loop(self):
+        """Bucle principal de monitoreo"""
+        while self.running:
+            active_main_sensors = self._get_active_main_sensors()
+            
+            if active_main_sensors and not self.alert_active and not self.evaluation_active:
+                print(f"[MODO AHORRO] Sensores principales activados: {active_main_sensors}")
+                self._reactivate_secondaries()
+                self._evaluate_secondaries(active_main_sensors)
+            
+            time.sleep(0.1)
+
+    def _evaluate_secondaries(self, active_main_sensors):
+        """Evalúa sensores secundarios durante 7 segundos"""
+        self.evaluation_active = True
+        evaluation_end = time.time() + self.evaluation_time
+        alerted = False
+        print(f"[MODO AHORRO] Evaluando sensores secundarios en {self.evaluation_time}s")
+        
+        while (time.time() < evaluation_end and 
+               not alerted and 
+               self.running and 
+               self.evaluation_active):  # Ahora verifica evaluation_active
+            
+            active_secondaries = self._get_active_secondary_sensors()
+            if active_secondaries:
+                print(f"[MODO AHORRO] Alertando sensores secundarios: {active_secondaries}")
+                self.alert_active = True
+                self.evaluation_active = False
+                self.alert_callback(active_secondaries)
+                alerted = True
+                break
+                
+            time.sleep(0.1)
+        
+        if not alerted and self.evaluation_active:  # Solo si la evaluación no fue cancelada
+            print("[MODO AHORRO] Evaluación completada sin actividad en secundarios")
+            if self._get_active_main_sensors():
+                print(f"[MODO AHORRO] Sensores principales aún activos: {active_main_sensors}")
+                self.alert_active = True
+                self.evaluation_active = False
+                self.alert_callback(active_main_sensors)
+            else:
+                self._deactivate_secondaries()
+        
+        self.evaluation_active = False
+
+    def _get_active_main_sensors(self):
+        """Devuelve lista de sensores principales activos"""
+        return [name for name in self.main_sensors
+                if self._is_sensor_active(name)]
+
+    def _get_active_secondary_sensors(self):
+        """Devuelve lista de sensores secundarios activos"""
+        return [name for name in self.secondary_sensors
+                if (name in Sensors_list and
+                    Sensors_list[name]["Status"] == ACTIVE and
+                    Sensors_list[name]["Install"] == INSTALL)]
+
+    def _is_sensor_active(self, sensor_name):
+        """Verifica si un sensor específico está activo"""
+        return (sensor_name in Sensors_list and
+                Sensors_list[sensor_name]["Status"] == ACTIVE and
+                Sensors_list[sensor_name]["Install"] in [INSTALL, OFF_MODE])
 
     def _deactivate_secondaries(self):
-        """Desactiva sensores secundarios (Install=OFF_MODE)"""
-        self._set_secondary_sensors_install(OFF_MODE)
-        print(f"[MODO AHORRO] Sensores secundarios desactivados por inactividad")
+        """Desactiva sensores secundarios"""
+        if not self.running or self.alert_active:
+            return
 
-    def _set_secondary_sensors_install(self, mode):
-        """Cambia Install de los secundarios (INSTALL/OFF_MODE)"""
         for name in self.secondary_sensors:
             if name in Sensors_list:
-                Sensors_list[name]["Install"] = mode
+                Sensors_list[name]["Install"] = OFF_MODE
+
         save_sensors_list()
+        print("[MODO AHORRO] Sensores secundarios desactivados")
+
+    def _reactivate_secondaries(self):
+        """Reactiva todos los sensores secundarios"""
+        self._cancel_timer('inactivity')
+        for name in self.secondary_sensors:
+            if name in Sensors_list:
+                Sensors_list[name]["Install"] = INSTALL
+
+        save_sensors_list()
+        print("[MODO AHORRO] Todos los sensores reactivados")
+
+    def _start_timer(self, name, interval, callback):
+        """Inicia un timer con nombre"""
+        self._cancel_timer(name)
+        self.timers[name] = threading.Timer(interval, callback)
+        self.timers[name].start()
+
+    def _cancel_timer(self, name):
+        """Cancela un timer específico"""
+        if name in self.timers and self.timers[name].is_alive():
+            self.timers[name].cancel()
 
     def stop_monitoring(self):
-        """Detiene el modo idéntico a Modo0"""
-        if self.running:
-            self.running = False
-            self._reactivate_secondaries()  # Reactiva todo al salir
-            if self.thread:
-                self.thread.join()
-            print("[MODO AHORRO] Monitor detenido")
+        """Detiene completamente el modo ahorro"""
+        self.running = False
+        self.alert_active = False
+        self.evaluation_active = False
+        for timer in self.timers.values():
+            timer.cancel()
+        print("[MODO AHORRO] Monitoreo detenido")
 
-    def check_desarmado_during_operation(self):
-        """Para cancelar operaciones pendientes al desarmar"""
+    def handle_disarm(self):
+        """Maneja el desarme del sistema"""
+        self.alert_active = False
+        self.evaluation_active = False  # Esto cancela la evaluación en curso
+        print("[MODO AHORRO] Sistema desarmado")
+        # Volver a monitorear
         if self.running:
-            print("[MODO AHORRO] Desarmado manual detectado")
+            self._deactivate_secondaries()

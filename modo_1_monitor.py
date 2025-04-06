@@ -20,10 +20,18 @@ class Modo1Monitor:
     def start_monitoring(self):
         """Inicia el hilo de monitoreo"""
         if not self.running:
-            self.running = True
-            self.thread = threading.Thread(target=self._monitor_loop, daemon=True)
-            self.thread.start()
-            print("[MODO 1] Monitoreo iniciado")
+            print("[MODO 1] Iniciado")
+            # Mensaje y timer para empezar monitoreo
+            print(f"[MODO 1] Tienes {self.s1_delay}s para salir")
+            self.timer = threading.Timer(self.s1_delay, self._start_monitoring_real)
+            self.timer.start()
+
+    def _start_monitoring_real(self):
+        """Inicia el monitoreo después del tiempo de salida"""
+        print("[MODO 1] Monitoreo activado")
+        self.running = True
+        self.thread = threading.Thread(target=self._monitor_loop, daemon=True)
+        self.thread.start()
 
     def stop_monitoring(self):
         """Detiene el monitoreo de manera segura"""

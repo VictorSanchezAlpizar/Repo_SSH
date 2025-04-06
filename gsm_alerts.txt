@@ -1,0 +1,6 @@
+{
+    "num_tel_Agencia": "+50612345678",
+    "usr_Active": "1",
+    "Alert_Type": "Alarma Sensor",
+    "Alerted_snr": "S1"
+}

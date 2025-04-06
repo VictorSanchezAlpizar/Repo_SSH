@@ -20,9 +20,9 @@ Sensors_list = {
     "S2": {"ID": 2, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
     "S3": {"ID": 3, "Zone": 1, "Status": INACTIVE, "Install": INSTALL},
     "S4": {"ID": 4, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
-    "S5": {"ID": 5, "Zone": 1, "Status": ACTIVE, "Install": INSTALL},
+    "S5": {"ID": 5, "Zone": 1, "Status": INACTIVE, "Install": INSTALL},
     "S6": {"ID": 6, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
-    "S7": {"ID": 7, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S7": {"ID": 7, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
     "S8": {"ID": 8, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
     "S9": {"ID": 9, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
     "S10": {"ID": 10, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
@@ -59,7 +59,7 @@ def read_sensors_list():
         Sensors_list = json.load(file)
     print("Lista de sensores actualizada:", Sensors_list)
 
-read_sensors_list()
+#read_sensors_list()
 
 """
 HOWTO: Guardar y leer de "memoria" la lista de sensores

@@ -6,6 +6,7 @@ from utils import * # type: ignore
 from sim_sensors import SimSensors
 from modo_0_monitor import Modo0Monitor
 from modo_1_monitor import Modo1Monitor
+from modo_ahorro_monitor import ModoAhorroMonitor
 
 #Parameters --------------------------------------------------------------------------------------
 # Crear la interfaz principal
@@ -26,10 +27,12 @@ def handle_sensor_alert(triggered_sensors):
 
 modo0_monitor           = Modo0Monitor(root, handle_sensor_alert)
 modo1_monitor           = Modo1Monitor(root, handle_sensor_alert)
+modo_ahorro_monitor     = ModoAhorroMonitor(root, handle_sensor_alert)
 menu_to_be_displayed    = tk.StringVar(value="MODE INIT")
 usr_to_be_displayed     = tk.StringVar(value="USR NS")
 ps_to_be_displayed      = tk.StringVar(value="Power Supply")
 bat_lvl_to_be_displayed = tk.StringVar(value="Batery Level")
+save_sensors_list()
 
 #Utils ---------------------------------------------------------------------------------------------
 # SW-Req: [SW-ID-72]
@@ -115,6 +118,11 @@ def update_label():
             show_main_menu()
         elif current_State == MODO_1_MENU:
             menu_label = "ARMADO. MODO 1"
+            label_ID.config(text="Opciones: ")
+            hide_all()
+            show_main_menu()
+        elif current_State == MODO_AHORRO:
+            menu_label = "ARMADO. AHORRO"
             label_ID.config(text="Opciones: ")
             hide_all()
             show_main_menu()
@@ -355,17 +363,18 @@ def on_button_click(value):
                         label_alerta.config(bg="yellow", text= f"{sensores_activos[0]} Activo")
                         current_State = MODO_DESARMADO_MENU  # Volvemos a desarmado
                     else:
-                        current_State = MODO_0_MENU
+                        current_State = MODO_1_MENU
                         label_alerta.config(bg="white", text="Alerta") 
-                        modo0_monitor.start_monitoring()
+                        modo1_monitor.start_monitoring()
                     
-                    update_label()  # Actualizamos la interfaz una sola vez
+                    update_label()  # Actualizamos la interfaz una sola vez               
                 # SW-Req: [SW-ID-21]
                 elif (current_Code == Codes_list["Code_Desarmado"]):
                     current_State = MODO_DESARMADO_MENU
                     update_label()
                     modo0_monitor.stop_monitoring()  # Detener monitoreo
                     modo1_monitor.stop_monitoring()
+                    modo_ahorro_monitor.stop_monitoring()
                     print("[INFO] Estado DESARMADO")
                     label_alerta.config(bg="white", text="Alerta") 
                 # SW-Req: [SW-ID-21]
@@ -375,8 +384,10 @@ def on_button_click(value):
                 # SW-Req: [SW-ID-21]
                 elif (current_Code == Codes_list["Code_Ahorro"]):
                     current_State = MODO_AHORRO
-                    menu_label = "ARMADO. MODO AHORRO"
+                    label_alerta.config(bg="white", text="Alerta") 
+                    modo_ahorro_monitor.start_monitoring()
 
+                    update_label()  # Actualizamos la interfaz una sola vez 
                 else:
                     print("Invalid command. Returning to START MENU")
                     current_State = START_MENU  # Volver al estado inicial
