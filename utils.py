@@ -24,6 +24,7 @@ CODE_BATERIA         = "Bateria"
 CODE_PRINCIPAL       = "Principal"
 CODE_PANICO          = "Panico"
 CODE_INCENDIO        = "Incendio"
+CODE_SENSOR          = "Alarma Sensor"
 
 row_custom           = 0
 col_custom           = 0

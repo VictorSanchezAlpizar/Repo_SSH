@@ -72,7 +72,7 @@ def admin_mode_sm(cmd):
     #NEW USER / MODIFY USER
     #--------------------------------------------------------------
     #--------------------------------------------------------------
-
+    # SW-Req: [SW-ID-23]
     if (current_state == REG_USR or current_state == REG_USR_2):
         if (current_state == REG_USR):
             if (active == False):
@@ -104,7 +104,7 @@ def admin_mode_sm(cmd):
     #NEW SNR
     #--------------------------------------------------------------
     #--------------------------------------------------------------
-
+    # SW-Req: [SW-ID-24]
     elif (current_state == REG_SNR or current_state == REG_SNR_2):
         if (current_state == REG_SNR):
             if (active == False):
@@ -112,6 +112,7 @@ def admin_mode_sm(cmd):
                 status = REG_SNR
                 print("HERE 1")
             else:
+                # SW-Req: [SW-ID-17]
                 active = False
                 tmp_1 = int(cmd)
                 for snr, data in Sensors_list.items():
@@ -132,11 +133,20 @@ def admin_mode_sm(cmd):
         elif (current_state == REG_SNR_2):
             try:
                 cmd = int(cmd)
+                # SW-Req: [SW-ID-28]
+                # SW-Req: [SW-ID-32]
                 if (cmd == 0 or cmd == 1):
-                    Sensors_list[tmp_2]["Zone"] = cmd
-                    Sensors_list[tmp_2]["Install"] = INSTALL
-                    save_sensors_list()
-                    print("HERE 3")
+                    # SW-Req: [SW-ID-31]
+                    if (cmd == 1 and tmp_2 == 1):
+                        status = IDLE
+                        print("Invalid entry. Sensor 0 cannot be Zone 1")
+                        status = IDLE
+                        current_state = IDLE
+                    else:
+                        Sensors_list[tmp_2]["Zone"] = cmd
+                        Sensors_list[tmp_2]["Install"] = INSTALL
+                        save_sensors_list()
+                        print("HERE 3")
                 else:
                     status = IDLE
                     print("Invalid entry.")
@@ -153,7 +163,7 @@ def admin_mode_sm(cmd):
     #MODIFY SNR
     #--------------------------------------------------------------
     #--------------------------------------------------------------
-
+    # SW-Req: [SW-ID-30]
     elif (current_state == MOD_SNR or current_state == MOD_SNR_2):
         if (current_state == MOD_SNR):
             if (active == False):
@@ -161,6 +171,7 @@ def admin_mode_sm(cmd):
                 status = MOD_SNR
                 print("HERE 1")
             else:
+                # SW-Req: [SW-ID-17]
                 active = False
                 tmp_1 = int(cmd)
                 for snr, data in Sensors_list.items():
@@ -181,11 +192,20 @@ def admin_mode_sm(cmd):
         elif (current_state == MOD_SNR_2):
             try:
                 cmd = int(cmd)
+                # SW-Req: [SW-ID-28]
+                # SW-Req: [SW-ID-32]
                 if (cmd == 0 or cmd == 1):
-                    Sensors_list[tmp_2]["Zone"] = cmd
-                    Sensors_list[tmp_2]["Install"] = INSTALL
-                    save_sensors_list()
-                    print("HERE 3")
+                    # SW-Req: [SW-ID-31]
+                    if (cmd == 1 and tmp_2 == 1):
+                        status = IDLE
+                        print("Invalid entry. Sensor 0 cannot be Zone 1")
+                        status = IDLE
+                        current_state = IDLE
+                    else:
+                        Sensors_list[tmp_2]["Zone"] = cmd
+                        Sensors_list[tmp_2]["Install"] = INSTALL
+                        save_sensors_list()
+                        print("HERE 3")
                 elif (cmd == 2):
                     Sensors_list[tmp_2]["Zone"] = 0
                     Sensors_list[tmp_2]["Install"] = NOT_INSTALL
@@ -207,7 +227,7 @@ def admin_mode_sm(cmd):
     #ADD/MODIFY TEL
     #--------------------------------------------------------------
     #--------------------------------------------------------------
-
+    # SW-Req: [SW-ID-25]
     # SW-Req: [SW-ID-54]
     elif (current_state == REG_TEL or current_state == REG_TEL_2):
         if (current_state == REG_TEL):

@@ -14,6 +14,8 @@ class Modo0Monitor:
         self.current_state = "monitoring"  # monitoring/delayed/alerting
         self.special_sensors = ["S1"]  # Sensores que se monitorean sin importar su zona
 
+    # SW-Req: [SW-ID-44]
+    # SW-Req: [SW-ID-58]
     def start_monitoring(self):
         """Inicia el hilo de monitoreo"""
         if not self.running:
@@ -75,6 +77,8 @@ class Modo0Monitor:
             print("[MODO 0] Retardo S1 cancelado (sistema desarmado)")
         self.current_state = "monitoring"
 
+    # SW-Req: [SW-ID-33]
+    # SW-Req: [SW-ID-70]
     def _check_activated_sensors(self):
         """
         Retorna lista de sensores activados que cumplen:

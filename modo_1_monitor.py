@@ -15,6 +15,8 @@ class Modo1Monitor:
         self.current_state = "monitoring"  # monitoring/delayed/alerting
         self.special_sensors = ["S1"]  # Sensores que se monitorean sin importar su zona
 
+    # SW-Req: [SW-ID-73]
+    # SW-Req: [SW-ID-44]
     def start_monitoring(self):
         """Inicia el hilo de monitoreo"""
         if not self.running:
@@ -90,6 +92,8 @@ class Modo1Monitor:
             if (sensor_data["Install"] == INSTALL and
                 sensor_data["Status"] == ACTIVE):
                 
+                # SW-Req: [SW-ID-35]
+                # SW-Req: [SW-ID-36]
                 if (sensor_data["Zone"] == ZONE_1 or 
                     sensor_name in self.special_sensors):
                     triggered.append(sensor_name)

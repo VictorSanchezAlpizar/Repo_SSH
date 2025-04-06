@@ -15,9 +15,13 @@ sim_sensors = SimSensors(root)
 
 # MODO 0
 # SW-Req: [SW-ID-1]
+# SW-Req: [SW-ID-14]
+# SW-Req: [SW-ID-34]
 def handle_sensor_alert(triggered_sensors):
     print(f"¡ALERTA! Sensores activados: {', '.join(triggered_sensors)}")
     label_alerta.config(bg="red", text=f"Alerta: {triggered_sensors[0]}")
+    # SW-Req: [SW-ID-72]
+    format_alert_message(utils_SSH["Agencia_Seguridad"], active_user, CODE_SENSOR, triggered_sensors[0])
 
 
 modo0_monitor           = Modo0Monitor(root, handle_sensor_alert)
@@ -28,6 +32,7 @@ ps_to_be_displayed      = tk.StringVar(value="Power Supply")
 bat_lvl_to_be_displayed = tk.StringVar(value="Batery Level")
 
 #Utils ---------------------------------------------------------------------------------------------
+# SW-Req: [SW-ID-72]
 def format_alert_message(num_tel, usr, alert_type, alert_snr = 0):
     global alert_message_GSM
 
@@ -73,6 +78,8 @@ def update_label():
     """Actualiza el label_ID según el estado actual."""
 
     # SW-Req: [SW-ID-2]
+    # SW-Req: [SW-ID-57]
+    # SW-Req: [SW-ID-61]
     menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
     usr_to_be_displayed.set(f"Usuario: {active_user}")
     
@@ -186,6 +193,7 @@ def on_button_click(value):
         entry_ID.delete(0, tk.END)
         sequence.clear()  # Limpiar la secuencia
 
+    # SW-Req: [SW-ID-38]
     elif value == "Enter":
         if (current_State == START_MENU and (sequence[0] != "#" and sequence[0] != "*")):
             
@@ -316,9 +324,12 @@ def on_button_click(value):
 
         else:
             # SW-Req: [SW-ID-42]
+            # SW-Req: [SW-ID-45]
             if (sequence[0]=='#' and sequence[-1]=='*'):
                 current_Code = get_code(sequence)
                 # SW-Req: [SW-ID-21]
+                # SW-Req: [SW-ID-55]
+                # SW-Req: [SW-ID-56]
                 if (current_Code == Codes_list["Code_Modo_0"]):
                     # Chequeo inicial solo para Modo 0
                     sensores_activos = modo0_monitor._check_activated_sensors()  # Usamos tu método existente
@@ -333,7 +344,9 @@ def on_button_click(value):
                         modo0_monitor.start_monitoring()
                     
                     update_label()  # Actualizamos la interfaz una sola vez
-                # SW-Req: [SW-ID-21] 
+                # SW-Req: [SW-ID-21]
+                # SW-Req: [SW-ID-59]
+                # SW-Req: [SW-ID-60]
                 elif (current_Code == Codes_list["Code_Modo_1"]):
                     sensores_activos = modo1_monitor._check_activated_sensors()  # Usamos tu método existente
             
