@@ -35,7 +35,8 @@ bat_lvl_to_be_displayed = tk.StringVar(value="Batery Level")
 save_sensors_list()
 
 #Utils ---------------------------------------------------------------------------------------------
-# SW-Req: [SW-ID-72]
+# SW-Req: [SW-ID-79]
+# SW-Req: [SW-ID-90]
 def format_alert_message(num_tel, usr, alert_type, alert_snr = 0):
     global alert_message_GSM
 
@@ -50,6 +51,7 @@ def format_alert_message(num_tel, usr, alert_type, alert_snr = 0):
     else:
         data_to_save = alert_message_GSM
 
+    # SW-Req: [SW-ID-80]
     with open("gsm_alerts.txt", "w") as file:
         json.dump(data_to_save, file, indent=4)
     
@@ -60,6 +62,12 @@ def init_menu():
     bat_lvl_to_be_displayed.set(f"Nivel Bateria: {nivel_bateria.get()}%")
     ps_to_be_displayed.set(f"Fuente Alimentación: {current_PS}")
 
+# SW-Req: [SW-ID-3]
+# SW-Req: [SW-ID-4]
+# SW-Req: [SW-ID-11]
+# SW-Req: [SW-ID-12]
+# SW-Req: [SW-ID-19]
+# SW-Req: [SW-ID-20]
 def verify_PS(*args):
     global current_PS, ps_to_be_displayed, usr_Bat_limit, current_PS
     """Función se ejecuta cada vez que el nivel de voltaje cambia"""
@@ -83,6 +91,8 @@ def update_label():
     # SW-Req: [SW-ID-2]
     # SW-Req: [SW-ID-57]
     # SW-Req: [SW-ID-61]
+    # SW-Req: [SW-ID-66]
+    # SW-Req: [SW-ID-68]
     menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
     usr_to_be_displayed.set(f"Usuario: {active_user}")
     
@@ -333,12 +343,13 @@ def on_button_click(value):
         else:
             # SW-Req: [SW-ID-42]
             # SW-Req: [SW-ID-45]
+            # SW-Req: [SW-ID-43]
             if (sequence[0]=='#' and sequence[-1]=='*'):
                 current_Code = get_code(sequence)
                 # SW-Req: [SW-ID-21]
                 # SW-Req: [SW-ID-55]
                 # SW-Req: [SW-ID-56]
-                if (current_Code == Codes_list["Code_Modo_0"]):
+                if (current_Code == Codes_list["Code_Modo_0"] and current_State != MODO_0_MENU and current_State != MODO_1_MENU):
                     # Chequeo inicial solo para Modo 0
                     sensores_activos = modo0_monitor._check_activated_sensors()  # Usamos tu método existente
             
@@ -355,7 +366,7 @@ def on_button_click(value):
                 # SW-Req: [SW-ID-21]
                 # SW-Req: [SW-ID-59]
                 # SW-Req: [SW-ID-60]
-                elif (current_Code == Codes_list["Code_Modo_1"]):
+                elif (current_Code == Codes_list["Code_Modo_1"] and current_State != MODO_0_MENU and current_State != MODO_1_MENU):
                     sensores_activos = modo1_monitor._check_activated_sensors()  # Usamos tu método existente
             
                     if sensores_activos:
@@ -369,16 +380,18 @@ def on_button_click(value):
                     
                     update_label()  # Actualizamos la interfaz una sola vez               
                 # SW-Req: [SW-ID-21]
+                # SW-Req: [SW-ID-64]
                 elif (current_Code == Codes_list["Code_Desarmado"]):
                     current_State = MODO_DESARMADO_MENU
                     update_label()
+                    # SW-Req: [SW-ID-37]
                     modo0_monitor.stop_monitoring()  # Detener monitoreo
                     modo1_monitor.stop_monitoring()
                     modo_ahorro_monitor.stop_monitoring()
                     print("[INFO] Estado DESARMADO")
                     label_alerta.config(bg="white", text="Alerta") 
                 # SW-Req: [SW-ID-21]
-                elif (current_Code == Codes_list["Code_Admin"]):
+                elif (current_Code == Codes_list["Code_Admin"] and current_State != MODO_0_MENU and current_State != MODO_1_MENU):
                     current_State = USER_MODE_MENU
                     menu_label = "MODO ADMIN"
                 # SW-Req: [SW-ID-21]
@@ -389,6 +402,7 @@ def on_button_click(value):
 
                     update_label()  # Actualizamos la interfaz una sola vez 
                 else:
+                    # SW-Req: [SW-ID-46]
                     print("Invalid command. Returning to START MENU")
                     current_State = START_MENU  # Volver al estado inicial
                     current_Usr_State == USR_INACTIVE

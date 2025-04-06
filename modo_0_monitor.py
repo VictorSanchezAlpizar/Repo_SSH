@@ -32,6 +32,7 @@ class Modo0Monitor:
         self.thread = threading.Thread(target=self._monitor_loop, daemon=True)
         self.thread.start()
 
+    # SW-Req: [SW-ID-65]
     def stop_monitoring(self):
         """Detiene el monitoreo de manera segura"""
         if self.running:

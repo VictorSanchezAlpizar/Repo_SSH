@@ -34,6 +34,8 @@ Sensors_list = {
     "S16": {"ID": 16, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
 }
 
+# SW-Req: [SW-ID-88]
+# SW-Req: [SW-ID-92]
 def actualizar_sensor(sensor_name, key, value):
     valid_config = False
     if sensor_name in Sensors_list and key in Sensors_list[sensor_name]:
