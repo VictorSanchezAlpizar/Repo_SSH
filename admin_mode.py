@@ -282,7 +282,7 @@ def save_utils_list():
         json.dump(utils_SSH, file, indent=1)
     print("Lista de utilidades almacenada en memoria")
 
-def read_Users_list():
+def read_utils_list():
     global utils_SSH
     with open("utils.txt", "r") as file:
         utils_SSH = json.load(file)
@@ -291,4 +291,4 @@ def read_Users_list():
 save_Users_list()
 read_Users_list()
 save_utils_list()
-read_Users_list()
+read_utils_list()

@@ -49,7 +49,7 @@ buttons = [
 
 alert_message_GSM = {
     "num_tel_Agencia" : "+50612345678",
-    "usr_Active" : 0,
-    "Alert_Type" : 0,
-    "Alerted_snr" : 0
+    "usr_Active"      : 0,
+    "Alert_Type"      : 0,
+    "Alerted_snr"     : 0
 }

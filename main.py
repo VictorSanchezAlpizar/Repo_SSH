@@ -37,13 +37,14 @@ def format_alert_message(num_tel, usr, alert_type, alert_snr = 0):
     
     if (alert_message_GSM["Alert_Type"] == CODE_INCENDIO or 
         alert_message_GSM["Alert_Type"] == CODE_PANICO):
-        with open("utils.txt", "w") as file:
-            json.dump(alert_message_GSM, file, indent=1)
+        data_to_save = {k: v for k, v in alert_message_GSM.items() if k != "Alerted_snr"}
     else:
-        with open("utils.txt", "w") as file:
-            json.dump(alert_message_GSM, file, indent=1)
+        data_to_save = alert_message_GSM
+
+    with open("gsm_alerts.txt", "w") as file:
+        json.dump(data_to_save, file, indent=4)
     
-    print("Mensaje preparado:", alert_message_GSM)
+    print("Mensaje preparado:", data_to_save)
 
 def init_menu():
     menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
@@ -156,7 +157,7 @@ def hide_admin_menu():
 #-----------------------------------------------------------------------------------------
 
 def on_button_click(value):
-    global current_State, current_Usr_State, usr_ID, usr_Bat_limit, sequence, start_menu_label, active_user
+    global utils_SSH, current_State, current_Usr_State, usr_ID, usr_Bat_limit, sequence, start_menu_label, active_user
     tmp_usr    = "NA"
     tmp_pwd    = "NA"
     tmp_lvl    = 0
@@ -165,6 +166,10 @@ def on_button_click(value):
     if value == "Pánico" or value == "Bomberos":
         # Cambiar el color del indicador L1 a verde cuando se presiona "Batería"
         label_alerta.config(bg="red")
+        if value == "Pánico":
+            format_alert_message(utils_SSH["Agencia_Seguridad"], active_user, CODE_PANICO)
+        else:
+            format_alert_message(utils_SSH["Agencia_Seguridad"], active_user, CODE_INCENDIO)
 
     elif value == "Esc":
         # Limpiar el cuadro de texto si se presiona "Esc"
@@ -389,7 +394,7 @@ def open_secondary_interface():
     tk.Button(secondary_window, text="Sim falla PS Principal ON", command=lambda b="Sim falla electrica ON": turn_on_main_button(b)).pack(pady=5)
     tk.Button(secondary_window, text="Sim falla PS Principal OFF", command=lambda b="Sim falla electrica OFF": turn_on_main_button(b)).pack(pady=10)
     tk.Button(secondary_window, text="Sim Sensor falla", command=lambda b="Sim Sensor falla": turn_on_main_button(b)).pack(pady=15)
-    tk.Button(secondary_window, text="Sim Bomberos PASS", command=lambda b="Sim Bomberos PASS": turn_on_main_button(b)).pack(pady=20)
+    tk.Button(secondary_window, text="Sim Alert PASS", command=lambda b="Sim Bomberos PASS": turn_on_main_button(b)).pack(pady=20)
 
     # Barra deslizante
     scale = tk.Scale(secondary_window, from_=0, to=100, orient="horizontal", variable=nivel_bateria, label="Nivel")
