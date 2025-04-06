@@ -84,6 +84,7 @@ class Modo0Monitor:
         """
         triggered = []
         
+        # SW-Req: [SW-ID-5]
         for sensor_name, sensor_data in Sensors_list.items():
             if (sensor_data["Install"] == INSTALL and
                 sensor_data["Status"] == ACTIVE):

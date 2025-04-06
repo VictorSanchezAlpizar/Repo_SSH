@@ -34,6 +34,7 @@ utils_SSH = {
     "Agencia_Seguridad" : "+50612345678"
 }
 
+# SW-Req: [SW-ID-21]
 def admin_mode_sm(cmd):
     global current_state, active, Sensors_list, Users_list, tmp_1, tmp_2, utils_SSH
     status = 0
@@ -207,6 +208,7 @@ def admin_mode_sm(cmd):
     #--------------------------------------------------------------
     #--------------------------------------------------------------
 
+    # SW-Req: [SW-ID-54]
     elif (current_state == REG_TEL or current_state == REG_TEL_2):
         if (current_state == REG_TEL):
             if (active == False):
@@ -254,8 +256,6 @@ def admin_mode_sm(cmd):
 #END ADMIN MODE
 #--------------------------------------------------------------------------------
 
-
-# IMPLEMENTS: SW-ID-XX
 def actualizar_User(usr_name, value):
     valid_config = False
     if usr_name in Users_list:
@@ -263,30 +263,67 @@ def actualizar_User(usr_name, value):
         valid_config = True
         return valid_config
     else:
+        # SW-Req: [SW-ID-51]
         print("Configuracion no disponible")
         return valid_config
 
+# SW-Req: [SW-ID-26]
 def save_Users_list():
-    with open("users.txt", "w") as file:
-        json.dump(Users_list, file, indent=2)
-    print("Lista de usuarios almacenada en memoria")
+    try:
+        with open("users.txt", "w") as file:
+            json.dump(Users_list, file, indent=2)
+        print("Lista de usuarios almacenada en memoria")
+    # SW-Req: [SW-ID-52]
+    except (IOError, OSError) as file_error:
+        print(f"Error al guardar el archivo: {file_error}")
+    except TypeError as type_error:
+        print(f"Error al convertir los datos a JSON: {type_error}")
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
 
+# SW-Req: [SW-ID-26]
 def read_Users_list():
     global Users_list
-    with open("users.txt", "r") as file:
-        Users_list = json.load(file)
-    print("Lista de usuarios actualizada:", Users_list)
+    try:
+        with open("users.txt", "r") as file:
+            Users_list = json.load(file)
+        print("Lista de usuarios actualizada:", Users_list)
+    # SW-Req: [SW-ID-52]
+    except FileNotFoundError:
+        print("El archivo 'users.txt' no fue encontrado.")
+    except json.JSONDecodeError as decode_error:
+        print(f"Error de formato en el archivo JSON: {decode_error}")
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
 
+# SW-Req: [SW-ID-26]
 def save_utils_list():
-    with open("utils.txt", "w") as file:
-        json.dump(utils_SSH, file, indent=1)
-    print("Lista de utilidades almacenada en memoria")
+    try:
+        with open("utils.txt", "w") as file:
+            json.dump(utils_SSH, file, indent=1)
+        print("Lista de utilidades almacenada en memoria")
+    # SW-Req: [SW-ID-52]
+    except (IOError, OSError) as file_error:
+        print(f"Error al guardar el archivo: {file_error}")
+    except TypeError as type_error:
+        print(f"Error al convertir los datos a JSON: {type_error}")
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
 
+# SW-Req: [SW-ID-26]
 def read_utils_list():
     global utils_SSH
-    with open("utils.txt", "r") as file:
-        utils_SSH = json.load(file)
-    print("Lista de usuarios actualizada:", utils_SSH)
+    try:
+        with open("utils.txt", "r") as file:
+            utils_SSH = json.load(file)
+        print("Lista de utilidades actualizada:", utils_SSH)
+    # SW-Req: [SW-ID-52]
+    except FileNotFoundError:
+        print("El archivo 'utils.txt' no fue encontrado.")
+    except json.JSONDecodeError as decode_error:
+        print(f"Error de formato en el archivo JSON: {decode_error}")
+    except Exception as e:
+        print(f"Ocurrió un error inesperado: {e}")
 
 save_Users_list()
 read_Users_list()

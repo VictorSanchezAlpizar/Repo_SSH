@@ -14,6 +14,7 @@ root.title("Interfaz Principal")
 sim_sensors = SimSensors(root)
 
 # MODO 0
+# SW-Req: [SW-ID-1]
 def handle_sensor_alert(triggered_sensors):
     print(f"¡ALERTA! Sensores activados: {', '.join(triggered_sensors)}")
     label_alerta.config(bg="red", text=f"Alerta: {triggered_sensors[0]}")
@@ -56,7 +57,8 @@ def verify_PS(*args):
     """Función se ejecuta cada vez que el nivel de voltaje cambia"""
     bat_lvl_to_be_displayed.set(f"Nivel Bateria: {nivel_bateria.get()}%")
     ps_to_be_displayed.set(f"Fuente Alimentación: {current_PS}")
-
+    
+    # SW-Req: [SW-ID-2]
     if (nivel_bateria.get() < usr_Bat_limit and current_PS == CODE_BATERIA):
         label_bateria.config(bg="green", text="Batería")
     else:
@@ -70,6 +72,7 @@ def update_label():
     global current_State, current_Usr_State, active_user, menu_label, menu_to_be_displayed, usr_to_be_displayed
     """Actualiza el label_ID según el estado actual."""
 
+    # SW-Req: [SW-ID-2]
     menu_to_be_displayed.set(f"Modo Activo: {menu_label}")
     usr_to_be_displayed.set(f"Usuario: {active_user}")
     
@@ -163,9 +166,16 @@ def on_button_click(value):
     tmp_lvl    = 0
     is_match   = 0
 
+    # SW-Req: [SW-ID-1]
+    # SW-Req: [SW-ID-9]
+    # SW-Req: [SW-ID-10]
     if value == "Pánico" or value == "Bomberos":
         # Cambiar el color del indicador L1 a verde cuando se presiona "Batería"
         label_alerta.config(bg="red")
+        # SW-Req: [SW-ID-82]
+        # SW-Req: [SW-ID-83]
+        # SW-Req: [SW-ID-85]
+        # SW-Req: [SW-ID-86]
         if value == "Pánico":
             format_alert_message(utils_SSH["Agencia_Seguridad"], active_user, CODE_PANICO)
         else:
@@ -245,6 +255,7 @@ def on_button_click(value):
             current_Usr_State = USR_INACTIVE
             update_label()  # Actualizar el label
 
+        # SW-Req: [SW-ID-21]
         elif current_State == USER_MODE_MENU:
             menu_label = "MODO ADMIN"
             current_command = get_string(sequence)
@@ -304,8 +315,10 @@ def on_button_click(value):
                 update_label()  # Actualizar el label
 
         else:
+            # SW-Req: [SW-ID-42]
             if (sequence[0]=='#' and sequence[-1]=='*'):
                 current_Code = get_code(sequence)
+                # SW-Req: [SW-ID-21]
                 if (current_Code == Codes_list["Code_Modo_0"]):
                     # Chequeo inicial solo para Modo 0
                     sensores_activos = modo0_monitor._check_activated_sensors()  # Usamos tu método existente
@@ -320,7 +333,7 @@ def on_button_click(value):
                         modo0_monitor.start_monitoring()
                     
                     update_label()  # Actualizamos la interfaz una sola vez
-                    
+                # SW-Req: [SW-ID-21] 
                 elif (current_Code == Codes_list["Code_Modo_1"]):
                     sensores_activos = modo1_monitor._check_activated_sensors()  # Usamos tu método existente
             
@@ -334,7 +347,7 @@ def on_button_click(value):
                         modo0_monitor.start_monitoring()
                     
                     update_label()  # Actualizamos la interfaz una sola vez
-
+                # SW-Req: [SW-ID-21]
                 elif (current_Code == Codes_list["Code_Desarmado"]):
                     current_State = MODO_DESARMADO_MENU
                     update_label()
@@ -342,11 +355,11 @@ def on_button_click(value):
                     modo1_monitor.stop_monitoring()
                     print("[INFO] Estado DESARMADO")
                     label_alerta.config(bg="white", text="Alerta") 
-
+                # SW-Req: [SW-ID-21]
                 elif (current_Code == Codes_list["Code_Admin"]):
                     current_State = USER_MODE_MENU
                     menu_label = "MODO ADMIN"
-
+                # SW-Req: [SW-ID-21]
                 elif (current_Code == Codes_list["Code_Ahorro"]):
                     current_State = MODO_AHORRO
                     menu_label = "ARMADO. MODO AHORRO"

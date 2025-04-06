@@ -13,6 +13,7 @@ OFF_MODE    = 2
 INSTALL     = 1
 NOT_INSTALL = 0
 
+# SW-Req: [SW-ID-27]
 Sensors_list = {
     "S1": {"ID": 1, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
     "S2": {"ID": 2, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
@@ -42,11 +43,13 @@ def actualizar_sensor(sensor_name, key, value):
         print("Configuracion no disponible")
         return valid_config
 
+# SW-Req: [SW-ID-29]
 def save_sensors_list():
     with open("sensors.txt", "w") as file:
         json.dump(Sensors_list, file, indent=4)
     print("Lista de sensores almacenada en memoria")
 
+# SW-Req: [SW-ID-29]
 def read_sensors_list():
     global Sensors_list
     with open("sensors.txt", "r") as file:

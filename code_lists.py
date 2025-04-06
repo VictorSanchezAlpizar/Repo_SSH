@@ -18,11 +18,13 @@ def actualizar_Code(code_name, value):
         print("Configuracion no disponible")
         return valid_config
 
+# SW-Req: [SW-ID-26]
 def save_Codes_list():
     with open("codes.txt", "w") as file:
         json.dump(Codes_list, file, indent=1)
     print("Lista de sensores almacenada en memoria")
 
+# SW-Req: [SW-ID-26]
 def read_Codes_list():
     global Codes_list
     with open("codes.txt", "r") as file:

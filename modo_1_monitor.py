@@ -2,6 +2,7 @@ import threading
 import time
 from sensors_list import *
 
+# SW-Req: [SW-ID-21]
 class Modo1Monitor:
     def __init__(self, root, alert_callback):
         self.root = root
@@ -84,6 +85,7 @@ class Modo1Monitor:
         """
         triggered = []
         
+        # SW-Req: [SW-ID-5]
         for sensor_name, sensor_data in Sensors_list.items():
             if (sensor_data["Install"] == INSTALL and
                 sensor_data["Status"] == ACTIVE):
