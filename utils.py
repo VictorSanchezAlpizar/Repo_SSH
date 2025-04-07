@@ -9,6 +9,7 @@ MODO_0_MENU          = 3
 MODO_1_MENU          = 4
 MODO_DESARMADO_MENU  = 5
 MODO_AHORRO          = 6
+CODE_MODIFY_PROC     = 7
 
 USR_INACTIVE         = 0
 USR_PROGRESS         = 1

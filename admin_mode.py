@@ -9,14 +9,15 @@ REG_USR     =  1
 REG_SNR     =  2
 MOD_SNR     =  9
 REG_TEL     =  4
-EXIT        =  5
+MOD_CODE    =  5
+EXIT        =  6
 
 REG_USR_2   =  10
 REG_SNR_2   =  11
 MOD_SNR_2   =  12
 REG_TEL_2   =  13
-MOD_CODE    =  14
-MODE_CODE_2 =  15
+MOD_CODE_2  =  15
+
 MODE_REST   =  16
 
 current_state = IDLE
@@ -46,7 +47,7 @@ def rest_system():
 # SW-Req: [SW-ID-21]
 # SW-Req: [SW-ID-87]
 def admin_mode_sm(cmd):
-    global current_state, active, Sensors_list, Users_list, tmp_1, tmp_2, utils_SSH
+    global current_state, active, Sensors_list, Users_list, tmp_1, tmp_2, utils_SSH, Codes_list
     status = 0
     #Actualizar datos con Usuarios almacenados en memoria
     save_Users_list()
@@ -80,6 +81,11 @@ def admin_mode_sm(cmd):
             status = ERR
             print("Invalid entry.")
 
+    if (current_state == EXIT):
+        status = 3
+        current_state = IDLE
+        return status
+
     #--------------------------------------------------------------
     #--------------------------------------------------------------
     #NEW USER / MODIFY USER
@@ -108,8 +114,9 @@ def admin_mode_sm(cmd):
                 Users_list[tmp_2]["PWD"] = cmd
                 save_Users_list()
             except ValueError:
-                status = ERR
                 print("Invalid entry.")
+                status = ERR
+                return status
             status = IDLE
             current_state = IDLE
 
@@ -167,8 +174,9 @@ def admin_mode_sm(cmd):
                     status = IDLE
                     current_state = IDLE
             except ValueError:
-                status = ERR
                 print("Invalid entry.")
+                status = ERR
+                return status
             status = IDLE
             current_state = IDLE
 
@@ -231,8 +239,9 @@ def admin_mode_sm(cmd):
                     status = IDLE
                     current_state = IDLE
             except ValueError:
-                status = ERR
                 print("Invalid entry.")
+                status = ERR
+                return status
             status = IDLE
             current_state = IDLE
 
@@ -281,8 +290,9 @@ def admin_mode_sm(cmd):
                     status = IDLE
                     current_state = IDLE
             except ValueError:
-                status = ERR
                 print("Invalid entry.")
+                status = ERR
+                return status
             status = IDLE
             current_state = IDLE
 
@@ -291,64 +301,50 @@ def admin_mode_sm(cmd):
     #MODIFY CODE
     #--------------------------------------------------------------
     #--------------------------------------------------------------
-    # SW-Req: [SW-ID-30]
-    elif (current_state == MOD_SNR or current_state == MOD_SNR_2):
-        if (current_state == MOD_SNR):
+    elif (current_state == MOD_CODE or current_state == MOD_CODE_2):
+        if (current_state == MOD_CODE):
             if (active == False):
                 active = True
-                status = MOD_SNR
-                print("HERE 1")
+                status = MOD_CODE
+                print("HERE 1.2")
             else:
-                # SW-Req: [SW-ID-17]
                 active = False
                 tmp_1 = int(cmd)
-                for snr, data in Sensors_list.items():
-                    if data["ID"] == tmp_1:
-                        if data["Install"] == 1:
-                            tmp_2 = snr
-                            status = MOD_SNR_2
-                            current_state = MOD_SNR_2
-                            print("HERE 2")
-                        
-                if (current_state != MOD_SNR_2):
+
+                if (tmp_1 <= 0 or tmp_1 > 5):
                     status = IDLE
                     print("Invalid entry.")
                     status = IDLE
                     current_state = IDLE
-
-
-        elif (current_state == MOD_SNR_2):
-            try:
-                cmd = int(cmd)
-                # SW-Req: [SW-ID-28]
-                # SW-Req: [SW-ID-32]
-                if (cmd == 0 or cmd == 1):
-                    # SW-Req: [SW-ID-31]
-                    if (cmd == 1 and tmp_2 == 1):
-                        status = IDLE
-                        print("Invalid entry. Sensor 0 cannot be Zone 1")
-                        status = IDLE
-                        current_state = IDLE
-                    else:
-                        Sensors_list[tmp_2]["Zone"] = cmd
-                        Sensors_list[tmp_2]["Install"] = INSTALL
-                        save_sensors_list()
-                        print("HERE 3")
-                elif (cmd == 2):
-                    Sensors_list[tmp_2]["Zone"] = 0
-                    Sensors_list[tmp_2]["Install"] = NOT_INSTALL
-                    save_sensors_list()
-                    print("HERE 4")
                 else:
-                    status = IDLE
-                    print("Invalid entry.")
-                    status = IDLE
-                    current_state = IDLE
+                    if (tmp_1 == 1):
+                        tmp_2 = "Code_Modo_0"
+                    elif (tmp_1 == 2):
+                        tmp_2 = "Code_Modo_1"
+                    elif (tmp_1 == 3):
+                        tmp_2 = "Code_Desarmado"
+                    elif (tmp_1 == 4):
+                        tmp_2 = "Code_Admin"
+                    elif (tmp_1 == 5):
+                        tmp_2 = "Code_Ahorro"
+
+                    status = MOD_CODE_2
+                    current_state = MOD_CODE_2
+                    print("HERE 2")
+
+        elif (current_state == MOD_CODE_2):
+            try:
+                cmd_test = int(cmd)
+                Codes_list[tmp_2] = cmd
+                save_Codes_list()
             except ValueError:
-                status = ERR
                 print("Invalid entry.")
+                status = ERR
+                return status
+                
             status = IDLE
             current_state = IDLE
+    return status
 
 #--------------------------------------------------------------------------------
 #END ADMIN MODE

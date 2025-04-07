@@ -127,6 +127,11 @@ def update_label():
             label_ID.config(text="Opciones: ")
             hide_all()
             show_admin_menu()
+        elif current_State == CODE_MODIFY_PROC:
+            print("HOlid")
+            label_ID.config(text="Code ID: ")
+            hide_all()
+            show_code_modify_menu()
         elif current_State == MODO_0_MENU:
             menu_label = "ARMADO. MODO 0"
             label_ID.config(text="Opciones: ")
@@ -169,6 +174,16 @@ def show_admin_menu():
     """Muestra Menu modo Admin."""
     for label in admin_menu_labels:
         label.grid()
+
+def show_code_modify_menu():
+    """Muestra Menu modo Admin (Code Modify)."""
+    for label in code_modify_menu_labels:
+        label.grid()
+
+def hide_code_modify_menu():
+    """Oculta las líneas de texto adicionales en la pantalla principal."""
+    for label in code_modify_menu_labels:
+        label.grid_remove()
 
 def hide_start_menu():
     """Oculta las líneas de texto adicionales en la pantalla principal."""
@@ -338,6 +353,20 @@ def on_button_click(value):
                 label_ID.config(text="Extensión (#XYZ): ")
             elif (status == REG_TEL_2):
                 label_ID.config(text="Numero Agencia Seguridad: ")
+
+            #---------------------------------------
+            #MODIFY CODE
+            #---------------------------------------
+
+            elif (status == MOD_CODE):
+                label_ID.config(text="Code ID: ")
+                current_Usr_State = USR_ACTIVE
+                current_State == CODE_MODIFY_PROC
+                menu_label = "MODO ADMIN (MOD CODE)"
+            elif (status == MOD_CODE_2):
+                label_ID.config(text="Code: ")
+                menu_label = "MODO ADMIN"
+                current_State == USER_MODE_MENU
 
             #---------------------------------------
             #ERROR IN PROGRESS
@@ -518,6 +547,17 @@ main_menu_labels = [
     tk.Label(root, text="3. Cerrar sesión", font=("Arial", 10))
 ]
 
+code_modify_menu_labels = [
+    tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=ps_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, textvariable=bat_lvl_to_be_displayed, font=("Arial", 10)),
+    tk.Label(root, text="1. Code Modo 0", font=("Arial", 10)),
+    tk.Label(root, text="2. Code Modo 1", font=("Arial", 10)),
+    tk.Label(root, text="3. Codigo Desarmado", font=("Arial", 10)),
+    tk.Label(root, text="4. Code Admin", font=("Arial", 10)),
+    tk.Label(root, text="5. Code Ahorro", font=("Arial", 10))
+]
+
 admin_menu_labels = [
     tk.Label(root, textvariable=menu_to_be_displayed, font=("Arial", 10)),
     tk.Label(root, textvariable=ps_to_be_displayed, font=("Arial", 10)),
@@ -526,7 +566,8 @@ admin_menu_labels = [
     tk.Label(root, text="2. Registro de Sensores", font=("Arial", 10)),
     tk.Label(root, text="3. Modificar Sensor", font=("Arial", 10)),
     tk.Label(root, text="4. Registro Num. Telefonico", font=("Arial", 10)),
-    tk.Label(root, text="5. Salir Modo Admin", font=("Arial", 10)),
+    tk.Label(root, text="5. Modificar Código", font=("Arial", 10)),
+    tk.Label(root, text="6. Salir Modo Admin", font=("Arial", 10)),
     tk.Label(root, text="16. Restablecer valores predeterminados", font=("Arial", 10))
 ]
 
@@ -538,6 +579,10 @@ for i, label in enumerate(start_menu_labels):
     #label.grid_remove()  # Ocultar inicialmente
 
 for i, label in enumerate(main_menu_labels):
+    label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
+    label.grid_remove()  # Ocultar inicialmente
+
+for i, label in enumerate(code_modify_menu_labels):
     label.grid(row=row_custom+i, column=0, columnspan=4, sticky="w")
     label.grid_remove()  # Ocultar inicialmente
 
