@@ -64,10 +64,44 @@ En esta interfaz el usuario puede interactuar con el sistema de las siguientes f
 ### Modo Admin
 
 
-### Modo 0
+### Modo 0 y Modo 1
 
+En esta sección se describen los modos **0** y **1** del sistema, los cuales permiten monitorear sensores de zonas específicas. Para acceder a cada uno, el usuario debe estar activo e ingresar la secuencia correspondiente:
 
-### Modo 1
+- `#123456*` para **Modo 0**
+- `#234567*` para **Modo 1**
+
+En el **Modo 0**, se monitorean todos los sensores de la **Zona 0**.
+
+![Figura Modo 0](Figuras/Modo0.png)
+
+En el **Modo 1**, se monitorean los sensores de la **Zona 1**.
+
+En ambos modos, se recomienda utilizar la **interfaz de simulación** para activar o desactivar sensores y verificar el funcionamiento del sistema de alertas.
+
+#### Comportamiento de las alertas
+
+- En el **Modo 0**, si se activa un sensor de la **Zona 0**, el sistema genera una alerta:
+
+  ![Figura Alerta Zona 0](Figuras/Modo0_Alerta.png)
+
+- En el **Modo 1**, únicamente los sensores de la **Zona 1** generan alertas. Por ejemplo, si se activa un sensor de la **Zona 0**, no se produce ninguna respuesta del sistema, como se muestra a continuación (este comportamiento es análogo en ambos modos cuando se activa un sensor que no pertenece a la zona actual):
+
+  ![Sensor Zona 0 sin alerta](Figuras/Modo1_SensorZona0SinAlerta.png)
+
+#### Consola del sistema
+
+Durante la simulación, la **consola** muestra información útil como:
+
+- El **tiempo de salida** al momento de armar el sistema.
+- El **tiempo de desarmado** tras la activación del sensor principal ("S1").
+- Las **alertas generadas por el módulo MSM**.
+
+#### Restricción al armar el sistema
+
+El sistema **no permite ser armado** si algún sensor se encuentra activo en el momento de ingresar el código. Este comportamiento se muestra en la siguiente figura:
+
+![Sensor activo impide armado](Figuras/SensorActivo_ImpideArmado.png)
 
 
 ### Modo Desarmado
