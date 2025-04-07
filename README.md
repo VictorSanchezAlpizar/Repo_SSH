@@ -63,6 +63,57 @@ En esta interfaz el usuario puede interactuar con el sistema de las siguientes f
 
 ### Modo Admin
 
+En esta sección se describe el modo **Admin** del sistema.
+
+Dentro de esta función se tienen las siguientes opciones:
+- Registro de Usuarios.
+- Registro de Sensores.
+- Modificar Sensor.
+- Registro Número de Telefono de la Agencia de Seguridad
+- Modificar Código de acceso
+- Salir de Modo Admin
+- Restablecer los valores del SSH a valores de fábrica.
+
+Las opciones anteriores se pueden encontrar en la siguiente figura:
+
+![Figura Menu Inicio](Figuras/Menu_Admin.PNG)
+
+1. Registro de Usuarios.
+Existen 5 campos disponibles para usuarios. Estos se encuentran numerados en orden ascendente desde 1 hasta 5.
+
+El sistema pedirá por el identificador del usuario y su respectiva contraseña.
+
+2. Registro de Sensores.
+Tal y como se especifica el SSH, solo se deben admitir un total de 16 sensores.
+
+El sistema pedirá al usuario por el identificar del sensor a instalar. Si este posee un identificador igual a **0** o mayor a **16** generará un error.
+
+3. Modificar Sensores.
+Mismas consideraciones que la opción anterior.
+
+Esta opción permite al usuario ajustar la zona en la cuál se encuentra instalado el sensor. Si la zona seleccionada no es ni **0** ni **1** el sensore generará un error.
+
+Nota: Si en la zona se selecciona **2**, el sistema procederá a Desintalar el sensor.
+
+4. Registro de Número Telefonico de la Agencia de Seguridad.
+Permite al usuario ingresar un numero telefonico nuevo.
+
+Nota: El sistema pide por la extensión (3 digitos) y el numero de telefono de 8 digitos. Estas son las únicas validaciones, por lo que si el usuario ingresa un número erroneo, el sistema no será capaz de reconocer este error.
+
+5. Modificar Código.
+El SSH cuenta con códigos predefinidos para ingresar a cada uno de los modos.
+
+Por un tema de seguridad y privacidad, se recomienda cambiar estos códigos por personales.
+
+El sistema pedirá inicialmente por el identificador del código. Las única opciones disponibles son:
+- Code ID: 1. Code Modo 0
+- Code ID: 2. Code Modo 1
+- Code ID: 3. Codigo Desarmado
+- Code ID: 4. Code Admin
+- Code ID: 5. Code Ahorro
+
+Posteriormente pedirá por el nuevo código. Este debe ser númerico. En caso de no serlo, el código será rechazado como error.
+
 
 ### Modo 0 y Modo 1
 
