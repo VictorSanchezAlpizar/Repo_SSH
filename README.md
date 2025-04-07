@@ -15,7 +15,7 @@ El presente documento tiene como finalidad:
 
 ### Menu de Inicio
 
-![Figura Menu Inicio](Figuras\Menu_Inicio.png)
+![Figura Menu Inicio](Figuras/Menu_Inicio.PNG)
 
 En esta sección el sistema espera por el ingreso de un usuario y su contraseña. De forma predefinida se encuentran los siguientes usuarios:
 - Usuario 1. ID: 1. PWD: 1234.
@@ -38,17 +38,17 @@ Finalmente, se encuentra el botón "Abrir Interfaz Sim", el cuál no estará dis
 
 Al seleccionar un usuario se presentará la pantalla de Contraseña:
 
-![Figura Menu Inicio](Figuras\Menu_Inicio_Contraseña.png)
+![Figura Menu Inicio](Figuras/Menu_Inicio_Contraseña.PNG)
 
 A continuación, el sistema le pedirá al usuario que indique el nivel de batería por debajo del cuál se debe alarmar.
 
-![Figura Menu Inicio](Figuras\Menu_Inicio_BatLvl.png)
+![Figura Menu Inicio](Figuras/Menu_Inicio_BatLvl.PNG)
 
 ### Menu Principal
 
 Una vez que la configuración inicial del usuario se encuentra preparada, el sistema entrará al Menu Principal.
 
-![Figura Menu Inicio](Figuras\Menu_Principal.png)
+![Figura Menu Inicio](Figuras/Menu_Principal.PNG)
 
 En este menú se despliega información de relevancia tal como:
 - Usuario activo.
@@ -80,7 +80,7 @@ En esta interfaz el usuario puede interactuar con el sistema de las siguientes f
 
 Al presionar el botón "Abrir Interfaz Sim" es posible acceder a opciones para testear diferentes funciones del SSH.
 
-![Figura Menu Inicio](Figuras\Menu_Sim.png)
+![Figura Menu Inicio](Figuras/Menu_Sim.PNG)
 
 En este menú se pueden realizar las siguientes opciones:
 - Establecer falla en la fuente "Principal" de energía.
@@ -91,6 +91,6 @@ En este menú se pueden realizar las siguientes opciones:
 
 Para el caso del Menú para fallas en sensores, se tiene la siguiente interfaz:
 
-![Figura Menu Inicio](Figuras\Menu_Sim_2.png)
+![Figura Menu Inicio](Figuras/Menu_Sim_2.PNG)
 
 Cada botón presente en el menú anterior ofrece opciones para alertar cualquiera de los 16 sensores.
