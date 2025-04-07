@@ -106,9 +106,36 @@ El sistema **no permite ser armado** si algún sensor se encuentra activo en el 
 
 ### Modo Desarmado
 
+Una vez que el usuario está activo y se ingresa la secuencia de código `#345678*`, el sistema entra en el **Modo Desarmado**.
+
+En este modo, se deja de monitorear cualquier sensor y todas las alertas del sistema se desactivan.
+
+![Interfaz en Modo Desarmado](Figuras/ModoDesarmado.png)
+
+
 
 ### Modo Ahorro
 
+Una vez que el usuario está activo y se ingresa la secuencia de código `#567812*`, el sistema entra en el **Modo Ahorro**.
+
+En este modo, **se monitorean todos los sensores del sistema**, sin importar la zona a la que pertenezcan. Sin embargo, los sensores **secundarios** (es decir, todos excepto el sensor principal) se desactivan automáticamente después de un tiempo determinado, lo cual permite que el usuario pueda salir sin generar alertas por pasos accidentales.
+
+El tiempo de salida es mostrado en la **consola**, y una vez transcurrido, los sensores secundarios quedan desactivados. Si uno de estos sensores se activa después de ese tiempo, **no se genera ninguna alerta**, como se muestra en la siguiente imagen:
+
+![Sensores secundarios desactivados sin alerta](Figuras/ModoAhorro_SensorSecundarioSinAlerta.png)
+
+Sin embargo, si el **sensor principal** se activa, el sistema vuelve a **activar todos los sensores secundarios**. En ese caso, si alguno de ellos está activo, se genera una alerta:
+
+![Activación por sensor principal](Figuras/ModoAhorro_AlertaPorSensorSecundario.png)
+
+Durante todo este proceso, la **consola** permite monitorear el comportamiento del sistema, incluyendo:
+
+- El flujo de activación y desactivación de sensores.
+- Los **mensajes de alerta** generados por el módulo MSM.
+- El **tiempo de salida** (para salir del área sin generar alertas).
+- El **tiempo de entrada** (que permite desarmar el sistema tras activar el sensor principal, antes de que se dispare una alerta).
+
+Este modo está diseñado para ofrecer **flexibilidad y ahorro de energía**, permitiendo salidas temporales mientras se mantiene un nivel de seguridad adecuado.
 
 ## Interfaz de Simulación
 
