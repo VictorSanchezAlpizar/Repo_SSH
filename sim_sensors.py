@@ -1,6 +1,7 @@
 import tkinter as tk
 from sensors_list import *
 
+# SW-Req: [SW-ID-87]
 class SimSensors:
     def __init__(self, root):
         self.root = root

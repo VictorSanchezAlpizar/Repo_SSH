@@ -18,9 +18,12 @@ sim_sensors = SimSensors(root)
 # SW-Req: [SW-ID-1]
 # SW-Req: [SW-ID-14]
 # SW-Req: [SW-ID-34]
+# SW-Req: [SW-ID-74]
+# SW-Req: [SW-ID-75]
 def handle_sensor_alert(triggered_sensors):
     print(f"¡ALERTA! Sensores activados: {', '.join(triggered_sensors)}")
     label_alerta.config(bg="red", text=f"Alerta: {triggered_sensors[0]}")
+    label_bocina.config(bg="red")
     # SW-Req: [SW-ID-72]
     format_alert_message(utils_SSH["Agencia_Seguridad"], active_user, CODE_SENSOR, triggered_sensors[0])
 
@@ -37,6 +40,8 @@ save_sensors_list()
 #Utils ---------------------------------------------------------------------------------------------
 # SW-Req: [SW-ID-79]
 # SW-Req: [SW-ID-90]
+# SW-Req: [SW-ID-95]
+# SW-Req: [SW-ID-71]
 def format_alert_message(num_tel, usr, alert_type, alert_snr = 0):
     global alert_message_GSM
 
@@ -75,6 +80,7 @@ def verify_PS(*args):
     ps_to_be_displayed.set(f"Fuente Alimentación: {current_PS}")
     
     # SW-Req: [SW-ID-2]
+    # SW-Req: [SW-ID-18]
     if (nivel_bateria.get() < usr_Bat_limit and current_PS == CODE_BATERIA):
         label_bateria.config(bg="green", text="Batería")
     else:
@@ -197,6 +203,9 @@ def on_button_click(value):
     if value == "Pánico" or value == "Bomberos":
         # Cambiar el color del indicador L1 a verde cuando se presiona "Batería"
         label_alerta.config(bg="red")
+        # SW-Req: [SW-ID-81]
+        # SW-Req: [SW-ID-84]
+        label_bocina.config(bg="red")
         # SW-Req: [SW-ID-82]
         # SW-Req: [SW-ID-83]
         # SW-Req: [SW-ID-85]
@@ -344,6 +353,7 @@ def on_button_click(value):
             # SW-Req: [SW-ID-42]
             # SW-Req: [SW-ID-45]
             # SW-Req: [SW-ID-43]
+            # SW-Req: [SW-ID-60]
             if (sequence[0]=='#' and sequence[-1]=='*'):
                 current_Code = get_code(sequence)
                 # SW-Req: [SW-ID-21]
@@ -360,6 +370,7 @@ def on_button_click(value):
                     else:
                         current_State = MODO_0_MENU
                         label_alerta.config(bg="white", text="Alerta") 
+                        label_bocina.config(bg="white", text="Bocina")
                         modo0_monitor.start_monitoring()
                     
                     update_label()  # Actualizamos la interfaz una sola vez
@@ -376,11 +387,14 @@ def on_button_click(value):
                     else:
                         current_State = MODO_1_MENU
                         label_alerta.config(bg="white", text="Alerta") 
+                        label_bocina.config(bg="white", text="Bocina")
                         modo1_monitor.start_monitoring()
                     
                     update_label()  # Actualizamos la interfaz una sola vez               
                 # SW-Req: [SW-ID-21]
                 # SW-Req: [SW-ID-64]
+                # SW-Req: [SW-ID-44]
+                # SW-Req: [SW-ID-45]
                 elif (current_Code == Codes_list["Code_Desarmado"]):
                     current_State = MODO_DESARMADO_MENU
                     update_label()
@@ -390,6 +404,7 @@ def on_button_click(value):
                     modo_ahorro_monitor.stop_monitoring()
                     print("[INFO] Estado DESARMADO")
                     label_alerta.config(bg="white", text="Alerta") 
+                    label_bocina.config(bg="white", text="Bocina")
                 # SW-Req: [SW-ID-21]
                 elif (current_Code == Codes_list["Code_Admin"] and current_State != MODO_0_MENU and current_State != MODO_1_MENU):
                     current_State = USER_MODE_MENU
@@ -398,6 +413,7 @@ def on_button_click(value):
                 elif (current_Code == Codes_list["Code_Ahorro"]):
                     current_State = MODO_AHORRO
                     label_alerta.config(bg="white", text="Alerta") 
+                    label_bocina.config(bg="white", text="Bocina")
                     modo_ahorro_monitor.start_monitoring()
 
                     update_label()  # Actualizamos la interfaz una sola vez 
@@ -431,6 +447,7 @@ def turn_on_main_button(value):
     if value == "Sim Bomberos PASS":
         # Cambiar el estado del botón en la interfaz principal
         label_alerta.config(bg="white", text="Alerta")
+        label_bocina.config(bg="white", text="Bocina")
     if value == "Sim Sensor falla":
         sim_sensors.open_sim_sensor_falla()  # Usamos la clase
 
@@ -509,7 +526,8 @@ admin_menu_labels = [
     tk.Label(root, text="2. Registro de Sensores", font=("Arial", 10)),
     tk.Label(root, text="3. Modificar Sensor", font=("Arial", 10)),
     tk.Label(root, text="4. Registro Num. Telefonico", font=("Arial", 10)),
-    tk.Label(root, text="5. Salir Modo Admin", font=("Arial", 10))
+    tk.Label(root, text="5. Salir Modo Admin", font=("Arial", 10)),
+    tk.Label(root, text="16. Restablecer valores predeterminados", font=("Arial", 10))
 ]
 
 
@@ -535,6 +553,9 @@ label_bateria.grid(row=row_custom+1, column=0, columnspan=1)
 
 label_alerta = tk.Label(root, text="Alerta", bg="white", width=10, height=2)
 label_alerta.grid(row=row_custom+1, column=1, columnspan=2)
+
+label_bocina = tk.Label(root, text="Bocina", bg="white", width=10, height=2)
+label_bocina.grid(row=row_custom+1, column=2, columnspan=4)
 
 # Etiquetas adicionales en la interfaz principal
 tk.Label(root, text="S E S", font=('Arial', 14)).grid(row=row_custom+2, column=0, columnspan=1)

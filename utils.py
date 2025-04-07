@@ -1,4 +1,5 @@
 import tkinter as tk
+from sensors_list import *
 
 #States
 START_MENU           = 0
@@ -45,7 +46,7 @@ buttons = [
     '1', '2', '3', 'Esc',
     '4', '5', '6', 'Enter',
     '7', '8', '9', 'Pánico',
-    '*', '0', '#', 'Bomberos'
+    '*', '0', '#', 'Bomberos',
 ]
 
 alert_message_GSM = {
@@ -53,4 +54,35 @@ alert_message_GSM = {
     "usr_Active"      : 0,
     "Alert_Type"      : 0,
     "Alerted_snr"     : 0
+}
+
+Sensors_list_copy = {
+    "S1": {"ID": 1, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
+    "S2": {"ID": 2, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
+    "S3": {"ID": 3, "Zone": 1, "Status": INACTIVE, "Install": INSTALL},
+    "S4": {"ID": 4, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S5": {"ID": 5, "Zone": 1, "Status": INACTIVE, "Install": INSTALL},
+    "S6": {"ID": 6, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S7": {"ID": 7, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
+    "S8": {"ID": 8, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S9": {"ID": 9, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S10": {"ID": 10, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S11": {"ID": 11, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S12": {"ID": 12, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S13": {"ID": 13, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S14": {"ID": 14, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S15": {"ID": 15, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+    "S16": {"ID": 16, "Zone": 0, "Status": INACTIVE, "Install": NOT_INSTALL},
+}
+
+Users_list_copy = {
+    "User_1" : {"ID": "1", "PWD": "1234"},
+    "User_2" : {"ID": "2", "PWD": "2341"},
+    "User_3" : {"ID": "3", "PWD": "3412"},
+    "User_4" : {"ID": "4", "PWD": "4123"},
+    "User_5" : {"ID": "5", "PWD": "5555"},
+}
+
+utils_SSH_copy = {
+    "Agencia_Seguridad" : "+50612345678"
 }

@@ -42,6 +42,7 @@ class Modo0Monitor:
                 self.thread.join()
             print("[MODO 0] Monitoreo detenido")
 
+    # SW-Req: [SW-ID-69]
     def _monitor_loop(self):
         """Bucle principal de monitoreo"""
         while self.running:

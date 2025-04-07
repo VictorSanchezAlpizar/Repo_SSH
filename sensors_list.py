@@ -15,6 +15,7 @@ NOT_INSTALL = 0
 
 # SW-Req: [SW-ID-27]
 # SW-Req: [SW-ID-16]
+# SW-Req: [SW-ID-13]
 Sensors_list = {
     "S1": {"ID": 1, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
     "S2": {"ID": 2, "Zone": 0, "Status": INACTIVE, "Install": INSTALL},
@@ -55,6 +56,7 @@ def save_sensors_list():
 
 # SW-Req: [SW-ID-29]
 # SW-Req: [SW-ID-15]
+# SW-Req: [SW-ID-89]
 def read_sensors_list():
     global Sensors_list
     with open("sensors.txt", "r") as file:

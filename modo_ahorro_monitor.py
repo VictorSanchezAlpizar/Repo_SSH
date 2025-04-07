@@ -2,6 +2,8 @@ import threading
 import time
 from sensors_list import *
 
+OFF_MODE    = 2
+
 class ModoAhorroMonitor:
     def __init__(self, root, alert_callback):
         self.root = root
@@ -53,6 +55,8 @@ class ModoAhorroMonitor:
             
             time.sleep(0.1)
 
+    # SW-Req: [SW-ID-39]
+    # SW-Req: [SW-ID-40]
     def _evaluate_secondaries(self, active_main_sensors):
         """Evalúa sensores secundarios durante 7 segundos"""
         self.evaluation_active = True
@@ -88,6 +92,7 @@ class ModoAhorroMonitor:
         
         self.evaluation_active = False
 
+    # SW-Req: [SW-ID-40]
     def _get_active_main_sensors(self):
         """Devuelve lista de sensores principales activos"""
         return [name for name in self.main_sensors
@@ -106,6 +111,7 @@ class ModoAhorroMonitor:
                 Sensors_list[sensor_name]["Status"] == ACTIVE and
                 Sensors_list[sensor_name]["Install"] in [INSTALL, OFF_MODE])
 
+    # SW-Req: [SW-ID-41]
     def _deactivate_secondaries(self):
         """Desactiva sensores secundarios"""
         if not self.running or self.alert_active:
@@ -118,6 +124,7 @@ class ModoAhorroMonitor:
         save_sensors_list()
         print("[MODO AHORRO] Sensores secundarios desactivados")
 
+    
     def _reactivate_secondaries(self):
         """Reactiva todos los sensores secundarios"""
         self._cancel_timer('inactivity')

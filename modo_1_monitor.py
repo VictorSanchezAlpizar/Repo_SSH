@@ -43,6 +43,7 @@ class Modo1Monitor:
                 self.thread.join()
             print("[MODO 1] Monitoreo detenido")
 
+    # SW-Req: [SW-ID-73]
     def _monitor_loop(self):
         """Bucle principal de monitoreo"""
         while self.running:
@@ -88,6 +89,7 @@ class Modo1Monitor:
             print("[MODO 1] Retardo S1 cancelado (sistema desarmado)")
         self.current_state = "monitoring"
 
+    # SW-Req: [SW-ID-62]
     def _check_activated_sensors(self):
         """
         Retorna lista de sensores activados que cumplen:
